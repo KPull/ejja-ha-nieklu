@@ -1,0 +1,20 @@
+{
+  "name": "ejja-ha-nieklu",
+  "version": "0.0.0",
+  "description": "",
+  "main": "web.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "logfmt": "~1.1.2",
+    "express": "~4.0.0",
+    "redis-url": "~0.2.0",
+    "mongodb": "~1.4.0",
+    "cors": "~2.2.0",
+    "body-parser": "~1.0.1"
+  }
+}
