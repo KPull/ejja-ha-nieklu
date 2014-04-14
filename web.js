@@ -17,10 +17,7 @@ app.use(logfmt.requestLogger());
 
 app.use(bodyParser());
 
-app.get('/', function(req, res) {
-  res.send('Hello World!');
-});
-
+app.use(express.static(__dirname + '/webapp/dist'));
 
 
 app.post('/order', function(req, res) {
