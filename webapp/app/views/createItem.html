@@ -1,0 +1,37 @@
+<div class="header">
+    <ul class="nav nav-pills pull-right">
+        <li><a ng-href="#">Open Orders</a></li>
+        <li><a ng-href="#/createOrder">Create An Order</a></li>
+    </ul>
+    <h3 class="text-muted">Ejja Ħa Nieklu</h3>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <h1>Request Item</h1>
+        <div class="row">
+            <label for="itemNameField" class="col-sm-3">Item Name:</label>
+            <div class="col-sm-9">
+                <input id="itemNameField" class="form-control" placeholder="Burger" ng-model="item.name"/>
+            </div>
+        </div>
+        <div class="row">
+            <label for="itemPriceField" class="col-sm-3">Price:</label>
+            <div class="col-sm-9">
+                <input id="itemPriceField" class="form-control" placeholder="4.95" ng-model="item.price"/>
+            </div>
+        </div>
+        <div class="row">
+            <label for="itemAuthorField" class="col-sm-3">Ordered By:</label>
+            <div class="col-sm-9">
+                <input id="itemAuthorField" class="form-control" placeholder="John Bloggs" ng-model="item.author"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <button class="btn btn-lg btn-success pull-right" ng-click="save()"><i class="fa fa-fw fa-mail-reply"></i> Add Item and Go Back</button>
+                <button class="btn btn-lg btn-primary pull-right" ng-click="saveAndAdd()"><i class="fa fa-fw fa-plus"></i> Add Item</button>
+            </div>
+        </div>
+    </div>
+</div>

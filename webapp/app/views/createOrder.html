@@ -1,0 +1,42 @@
+<div class="header">
+    <ul class="nav nav-pills pull-right">
+        <li><a ng-href="#">Open Orders</a></li>
+        <li class="active"><a ng-href="#/createOrder">Create An Order</a></li>
+    </ul>
+    <h3 class="text-muted">Ejja Ħa Nieklu</h3>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <h1>Open New Order</h1>
+        <div class="row">
+            <label for="orderRestaurantField" class="col-sm-3">Restaurant:</label>
+            <div class="col-sm-9">
+                <input id="orderRestaurantField" placeholder="Pizza Planet" class="form-control" ng-model="order.from.name"/>
+            </div>
+        </div>
+        <div class="row">
+            <label for="orderAddressField" class="col-sm-3">Address:</label>
+            <div class="col-sm-9">
+                <input id="orderAddressField" placeholder="Xewkija" class="form-control" ng-model="order.from.address"/>
+            </div>
+        </div>
+        <div class="row">
+            <label for="orderAuthorField" class="col-sm-3">Ordered by:</label>
+            <div class="col-sm-9">
+                <input id="orderAuthorField" placeholder="Joe Bloggs" class="form-control" ng-model="order.author"/>
+            </div>
+        </div>
+        <div class="row">
+            <label for="orderEmailField" class="col-sm-3">E-mail:</label>
+            <div class="col-sm-9">
+                <input id="orderEmailField" placeholder="joe.bloggs@test.test" class="form-control" ng-model="order.email"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <button class="btn btn-lg btn-primary pull-right" ng-click="save()"><i class="fa fa-fw fa-check"></i> Open Order</button>
+            </div>
+        </div>
+    </div>
+</div>
