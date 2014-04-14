@@ -100,6 +100,18 @@ app.get('/order', function(req, res) {
     });
 });
 
+app.get('/order/:id', function(req, res) {
+    mongo.Db.connect(mongoUri, function (err, db) {
+      db.collection('orders', function(er, collection) {
+        collection.findOne({
+           _id: new BSON.ObjectID(req.params.id)
+        }, function(error, results) {
+            res.send(results);
+        });
+      });
+    });
+});
+
 var port = Number(process.env.PORT || 5000);
 app.listen(port, function() {
   console.log("Listening on " + port);
