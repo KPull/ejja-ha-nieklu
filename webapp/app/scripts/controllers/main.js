@@ -10,10 +10,13 @@ angular.module('ikelClientApp').controller('MainCtrl', function ($scope, Order, 
             });
         });
     });
-    
+
     $scope.deleteItem = function(item, order, index) {
         item.$delete(function() {
             order.items.splice(index, 1);
+            order.total = order.items.reduce(function(sum, item) {
+                return sum + parseFloat(item.price || 0);
+            }, 0);
         });
     };
 });
