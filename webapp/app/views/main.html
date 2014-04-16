@@ -23,6 +23,11 @@
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
+                        <span ng-show="{{order.menuLink}}">Menu Link: <a href="{{order.menuLink}}">{{order.menuLink}}</a></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
                         <a ng-href="#/createItem/{{order._id}}" class="btn btn-primary"><i class="fa fa-fw fa-plus"></i> Add Item</a>
                         <a ng-href="#/printOrder/{{order._id}}" class="btn btn-success"><i class="fa fa-fw fa-print"></i> Print Order</a>
                         <a class="btn btn-danger" ng-href="#/deleteOrder/{{order._id}}"><i class="fa fa-fw fa-trash-o"></i> Close Order</a>
