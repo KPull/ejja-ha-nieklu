@@ -4,13 +4,13 @@ var logfmt = require("logfmt");
 var app = express();
 var cors = require('cors');
 var bodyParser = require('body-parser');
+var nodemailer = require('nodemailer');
 
 var mongo = require('mongodb');
 var BSON = mongo.BSONPure;
 
 var mongoUri = process.env.MONGOLAB_URI ||
   process.env.MONGOHQ_URL || '';
-
 
 app.use(cors());
 app.use(logfmt.requestLogger());
@@ -19,13 +19,36 @@ app.use(bodyParser());
 
 app.use(express.static(__dirname + '/webapp/dist'));
 
+// Create the e-mail transport object
+var transport = nodemailer.createTransport("SMTP", {
+    service: "Gmail",
+    auth: {
+        user: process.env.MAILER_USERNAME,
+        pass: process.env.MAILER_PASSWORD
+    }
+});
 
 app.post('/order', function(req, res) {
+    
+    if (!req.body.from || !req.body.from.name) {
+        res.status(400).send({ error: 'Restaurant name not specified. Please specify a non-empty restaurant name.' });
+        return;
+    }
+    
     mongo.Db.connect(mongoUri, function (err, db) {
       db.collection('orders', function(er, collection) {
-
         collection.insert(req.body, {safe: true}, function(er,rs) {
             res.send(rs[0]);
+            
+            if (process.env.ORDER_ALERTS_TO) {
+                // Send an e-mail if variable is set
+                transport.sendMail({
+                    from: process.env.ORDER_ALERTS_FROM,
+                    to: process.env.ORDER_ALERTS_TO,
+                    subject: 'Ejja Ha Nieklu: Order Opened',
+                    text: 'An order has been opened for ' + req.body.from.name + '. Check it out over on the Ejja Ha Nieklu app on http://ejja-ha-nieklu.herokuapp.com/ :)'
+                });
+            }
         });
       });
     });
@@ -34,7 +57,6 @@ app.post('/order', function(req, res) {
 app.post('/item', function(req, res) {
     mongo.Db.connect(mongoUri, function (err, db) {
       db.collection('items', function(er, collection) {
-
         collection.insert(req.body, {safe: true}, function(er,rs) {
             res.send(rs[0]);
         });
