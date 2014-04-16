@@ -29,26 +29,25 @@ var transport = nodemailer.createTransport("SMTP", {
 });
 
 app.post('/order', function(req, res) {
-    
+
     if (!req.body.from || !req.body.from.name) {
         res.status(400).send({ error: 'Restaurant name not specified. Please specify a non-empty restaurant name.' });
         return;
     }
-    
+
     mongo.Db.connect(mongoUri, function (err, db) {
       db.collection('orders', function(er, collection) {
         collection.insert(req.body, {safe: true}, function(er,rs) {
-            res.send(rs[0]);
-            
             if (process.env.ORDER_ALERTS_TO) {
                 // Send an e-mail if variable is set
                 transport.sendMail({
                     from: process.env.ORDER_ALERTS_FROM,
                     to: process.env.ORDER_ALERTS_TO,
-                    subject: 'Ejja Ha Nieklu: Order Opened',
-                    text: 'An order has been opened for ' + req.body.from.name + '. Check it out over on the Ejja Ha Nieklu app on http://ejja-ha-nieklu.herokuapp.com/ :)'
+                    subject: 'Ejja Ha Nieklu: Order Opened (' + req.body.from.name +')',
+                    text: 'An order has been opened for ' + req.body.from.name + '. \r\nCheck it out over on the Ejja Ha Nieklu app on http://ejja-ha-nieklu.herokuapp.com/ :)'
                 });
             }
+            res.send(rs[0]);
         });
       });
     });
