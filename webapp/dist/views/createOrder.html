@@ -23,6 +23,12 @@
             </div>
         </div>
         <div class="row">
+            <label for="orderMenuLinkField" class="col-sm-3">Menu Link:</label>
+            <div class="col-sm-9">
+                <input id="orderMenuLinkField" type="url" required="" placeholder="e.g: http://menulink.info/menu" class="form-control" ng-model="order.from.menuLink">
+            </div>
+        </div>
+        <div class="row">
             <label for="orderAuthorField" class="col-sm-3">Ordered by:</label>
             <div class="col-sm-9">
                 <input type="text" id="orderAuthorField" required="" placeholder="e.g: Joe Bloggs" class="form-control" ng-model="order.author">
