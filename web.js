@@ -40,11 +40,11 @@ app.post('/order', function(req, res) {
         collection.insert(req.body, {safe: true}, function(er,rs) {
             res.send(rs[0]);
             
-            if (process.env.ORDER_ALERTS_EMAIL) {
+            if (process.env.ORDER_ALERTS_TO) {
                 // Send an e-mail if variable is set
                 transport.sendMail({
                     from: process.env.ORDER_ALERTS_FROM,
-                    to: process.env.ORDER_ALERTS_EMAIL,
+                    to: process.env.ORDER_ALERTS_TO,
                     subject: 'Ejja Ha Nieklu: Order Opened',
                     text: 'An order has been opened for ' + req.body.from.name + '. Check it out over on the Ejja Ha Nieklu app on http://ejja-ha-nieklu.herokuapp.com/ :)'
                 });
