@@ -2,7 +2,6 @@
 
 angular.module('ikelClientApp').controller('CreateOrderCtrl', function ($scope, $location, Order, localStorageService) {
 
-
   var assumedAuthor = localStorageService.get('assumedAuthor');
   if (assumedAuthor) {
     $scope.order = {};
