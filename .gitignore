@@ -5,3 +5,4 @@ node_modules
 nbproject/project.properties
 nbproject/project.xml
 webapp/npm-debug.log
+*/app/bower_components
