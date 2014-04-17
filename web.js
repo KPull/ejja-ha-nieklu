@@ -9,8 +9,7 @@ var nodemailer = require('nodemailer');
 var mongo = require('mongodb');
 var BSON = mongo.BSONPure;
 
-var mongoUri = process.env.MONGOLAB_URI ||
-  process.env.MONGOHQ_URL || '';
+var mongoUri = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/ejja-ha-nieklu';
 
 app.use(cors());
 app.use(logfmt.requestLogger());
