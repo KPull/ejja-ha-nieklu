@@ -5,7 +5,8 @@ angular.module('ikelClientApp', [
   'ngSanitize',
   'ngRoute',
   'ui.bootstrap',
-  'ui.bootstrap.tabs'
+  'ui.bootstrap.tabs',
+  'LocalStorageModule'
 ]).config(function($routeProvider) {
   $routeProvider.when('/', {
     templateUrl: 'views/main.html',
@@ -25,4 +26,6 @@ angular.module('ikelClientApp', [
   }).otherwise({
     redirectTo: '/'
   });
-});
+}).config(['localStorageServiceProvider', function(localStorageServiceProvider){
+  localStorageServiceProvider.setPrefix('EHN');
+}]);
