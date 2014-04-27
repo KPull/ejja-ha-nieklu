@@ -7,9 +7,6 @@ angular.module('ikelClientApp').controller('CreateItemCtrl', function ($scope, $
     $scope.item = {
         _order: $routeParams.orderId
     };
-    $scope.prefill = function() {
-        // Fill in price somehow
-    };
 
     var assumedAuthor = localStorageService.get('assumedAuthor');
     if (assumedAuthor) {
