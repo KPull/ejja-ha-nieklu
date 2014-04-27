@@ -13,7 +13,7 @@
             <div class="row">
                 <label for="itemNameField" class="col-sm-3">Item Name:</label>
                 <div class="col-sm-9">
-                    <input id="itemNameField" required class="form-control" placeholder="Burger" ng-model="item.name"/>
+                    <input type="text" ng-model="item.name" placeholder="Burger" typeahead="choice.name for choice in choices | filter:$viewValue | limitTo: 8" typeahead-on-select="prefill()" class="form-control">
                 </div>
             </div>
             <div class="row">
