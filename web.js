@@ -129,6 +129,41 @@ app.get('/order/:id', function(req, res) {
     });
 });
 
+app.get('/pleas', function(req, res) {
+	mongo.Db.connect(mongoUri, function (err, db) {
+		if (err) {
+			console.log(err);
+			return;
+		}
+		db.collection('pleas', function(er, collection) {
+			var now = new Date();
+			collection.find({
+				timestamp: {
+					$gte: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0),
+					$lte: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999)
+				}
+			}).toArray(function(error, results) {
+				res.send(results);
+			});
+		});
+	});
+});
+
+app.post('/pleas', function(req, res) {
+	mongo.Db.connect(mongoUri, function (err, db) {
+		if (err) {
+			console.log(err);
+			return;
+		}
+		db.collection('pleas', function(er, collection) {
+			req.body.timestamp = new Date();
+			collection.insert(req.body, {safe: true}, function(er,rs) {
+				res.send(rs[0]);
+			});
+		});
+	});
+});
+
 var port = Number(process.env.PORT || 5000);
 app.listen(port, function() {
   console.log("Listening on " + port);
