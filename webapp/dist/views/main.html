@@ -10,7 +10,7 @@
 <div class="well">
     <div class="row">
         <div class="col-xs-8">
-            <h3>Hunger Report</h3>
+            <h4><i class="fa fa-cutlery"></i> Hunger Report</h4>
         </div>
         <div class="col-xs-4">
             <form ng-submit="iAmHungry()" ng-hide="hungryToday">
@@ -22,7 +22,7 @@
 
                 </div>
             </form>
-            <div class="text-success text-right" ng-show="hungryToday"><i class="fa fa-check"></i> Added</div>
+            <div class="text-warning text-right" ng-show="hungryToday"><i class="fa fa-check"></i> You are hungry!</div>
         </div>
     </div>
     <div>
@@ -30,9 +30,9 @@
                      'one': 'Only {{hungryList[0].name}} is hungry today.',
                      'other': '{{hungryList.length}} people are hungry today:'}">
         </ng-pluralize>
-        <ul class="list-inline inline" ng-show="hungryList.length > 1">
-            <li ng-repeat="hungryDude in hungryList">{{hungryDude.name}}</li>
-        </ul>
+        <span ng-show="hungryList.length > 1">
+            <span ng-repeat="hungryDude in hungryList">{{$last ? 'and ' : ''}}{{hungryDude.name}}{{$last ? '' : ', '}}</span>
+        </span>
     </div>
 </div>
 
