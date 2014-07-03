@@ -132,8 +132,8 @@ app.get('/order/:id', function(req, res) {
 app.get('/pleas', function(req, res) {
 	mongo.Db.connect(mongoUri, function (err, db) {
 		if (err) {
-			console.log(err);
-			return;
+      console.error(err);
+			req.send(500, err);
 		}
 		db.collection('pleas', function(er, collection) {
 			var now = new Date();
@@ -152,13 +152,15 @@ app.get('/pleas', function(req, res) {
 app.post('/pleas', function(req, res) {
 	mongo.Db.connect(mongoUri, function (err, db) {
 		if (err) {
-			console.log(err);
-			return;
+			console.error(err);
+      req.send(500, err);
 		}
 		db.collection('pleas', function(er, collection) {
 			req.body.timestamp = new Date();
 			collection.insert(req.body, {safe: true}, function(er,rs) {
-				res.send(rs[0]);
+        // in case nothing is returned
+        var value = (!!rs ? null : rs[0]);
+				res.send(value);
 			});
 		});
 	});

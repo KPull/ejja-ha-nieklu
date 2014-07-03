@@ -30,16 +30,32 @@ angular.module('ikelClientApp').controller('MainCtrl', function($scope, Order, I
     $scope.hungryName = assumedAuthor.author;
   }
 
+  function isTimeToday(time) {
+    if (!time) {
+      return false;
+    }
+
+    var timeDate = new Date(time);
+    var today = new Date();
+
+    return (today.getMonth() === timeDate.getMonth()) &&
+            (today.getDate() === timeDate.getDate());
+  }
 
   $scope.hungryList = Plea.query();
-  $scope.hungryToday = false;
+  $scope.hungryToday = isTimeToday(parseInt(localStorageService.get('hungryToday'), 10));
 
   $scope.iAmHungry = function() {
 
-    new Plea({name: $scope.hungryName}).$save(function() {
-      $scope.hungryList.push({name: $scope.hungryName});
-      $scope.hungryToday = !$scope.hungryToday;
+    new Plea({
+        name: $scope.hungryName
+      }).$save(function() {
+        $scope.hungryList.push({name: $scope.hungryName});
+        localStorageService.set('hungryToday', new Date().getTime());
+        $scope.hungryToday = true;
     });
   };
+
+
 
 });
