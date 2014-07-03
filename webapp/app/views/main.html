@@ -13,13 +13,12 @@
             <h3>Hunger Report</h3>
         </div>
         <div class="col-xs-4">
-            <form ng-submit="iAmHungry()" ng-hide="hungryToday">
+            <form name="hungerReport" ng-submit="iAmHungry()" ng-hide="hungryToday" novalidate="novalidate">
                 <div class="input-group">
-                    <input type="text" class="form-control" ng-model="hungryName" placeholder="Enter your name">
+                    <input type="text" class="form-control" ng-model="hungryName" placeholder="Enter your name" required="required">
                     <span class="input-group-btn">
-                        <button class="btn btn-default" type="submit"><i class="fa fa-plus"></i></button>
+                        <button class="btn btn-default" type="submit" ng-disabled="hungerReport.$invalid"><i class="fa fa-plus"></i></button>
                     </span>
-
                 </div>
             </form>
             <div class="text-success text-right" ng-show="hungryToday"><i class="fa fa-check"></i> Added</div>
