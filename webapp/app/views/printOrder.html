@@ -13,7 +13,11 @@
         <tr ng-repeat="item in order.summary">
             <td>
                 <div class="h3">{{item.count}} x {{item.name}}</div>
-                <div class="h4 text-muted">{{item.authors.join(', ')}}</div>
+                <div class="h4 text-muted">
+                    <ul class="list-inline">
+                        <li ng-repeat="author in item.authors"><i class="fa fa-square-o"></i> {{author}}</li>
+                    </ul>
+                </div>
             </td>
             <td class="text-right">
                 <div class="h3">{{(item.subtotal || 0) | currency:"€"}}</div>
@@ -28,3 +32,8 @@
         </tr>
     </tfoot>
 </table>
+<div class="row hidden-print">
+    <div class="col-xs-12">
+        <a href="#" class="btn btn-success" type="submit"><i class="fa fa-fw fa-mail-reply"></i> Go Back</a>
+    </div>
+</div>
