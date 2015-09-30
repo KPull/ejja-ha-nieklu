@@ -1,17 +1,28 @@
 'use strict';
-angular.module('ikelClientApp').controller('MainCtrl', function($scope, Order, Item, Plea, localStorageService) {
-  $scope.orders = Order.query({}, function(orders) {
-    orders.forEach(function(order) {
-      order.items = Item.query({
-        order: order._id
-      }, function(items) {
-        order.total = items.reduce(function(sum, item) {
-          return sum + parseFloat(item.price || 0);
-        }, 0);
+angular.module('ikelClientApp').controller('MainCtrl', function($scope, Order, Item, Plea, localStorageService, ehnSocket) {
+  
+  var registered = false;
+  var refreshOrder = function() {
+  
+      $scope.orders = Order.query({}, function(orders) {
+        orders.forEach(function(order) {
+          order.items = Item.query({
+            order: order._id
+          }, function(items) {
+            order.total = items.reduce(function(sum, item) {
+              return sum + parseFloat(item.price || 0);
+            }, 0);
+          });
+        });
+        if (!registered) { 
+            ehnSocket.on('new_order', refreshOrder); 
+            ehnSocket.on('closed_order', refreshOrder); 
+            registered = true;
+        }
       });
-    });
-  });
-
+  };
+  refreshOrder();  
+  
   $scope.deleteItem = function(item, order, index) {
     item.$delete(function() {
       order.items.splice(index, 1);

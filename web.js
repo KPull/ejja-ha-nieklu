@@ -6,6 +6,9 @@ var cors = require('cors');
 var bodyParser = require('body-parser');
 var nodemailer = require('nodemailer');
 
+var ioPort = Number(process.env.IOPORT || 3000);
+var io = require('socket.io')(ioPort);
+
 var mongo = require('mongodb');
 var BSON = mongo.BSONPure;
 
@@ -47,6 +50,7 @@ app.post('/order', function(req, res) {
                 });
             }
             res.send(rs[0]);
+            io.emit('new_order', req.body);
         });
       });
     });
@@ -90,22 +94,25 @@ app.get('/item', function(req, res) {
 app.delete('/order/:id', function(req, res) {
     mongo.Db.connect(mongoUri, function (err, db) {
       db.collection('orders', function(er, collection) {
-        collection.remove({
+        collection.findOne({
            _id: new BSON.ObjectID(req.params.id)
-        },function() {
-          db.collection('items', function(er, collection) {
+        }, function(error, results) {
             collection.remove({
-               _order: req.params.id
+               _id: new BSON.ObjectID(req.params.id)
             },function() {
-              res.send();
+              db.collection('items', function(er, collection) {
+                collection.remove({
+                   _order: req.params.id
+                },function() {
+                    io.emit('closed_order', results);
+                    res.send();
+                });
+              });
             });
-          });
-
-        });
+        })
       });
     });
 });
-
 
 app.get('/order', function(req, res) {
     mongo.Db.connect(mongoUri, function (err, db) {
@@ -132,7 +139,7 @@ app.get('/order/:id', function(req, res) {
 app.get('/pleas', function(req, res) {
 	mongo.Db.connect(mongoUri, function (err, db) {
 		if (err) {
-      console.error(err);
+            console.error(err);
 			req.send(500, err);
 		}
 		db.collection('pleas', function(er, collection) {
