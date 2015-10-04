@@ -44,12 +44,6 @@ angular.module('ikelClientApp', [
             body: order.author + ' has opened a new food order for ' + order.from.name + ' on Ejja Ħa Nieklu.',
             icon: 'images/burger.png',
             autoClose: 24000
-        }, function(error, hide) {
-            if (error) {
-                console.log('Unable to show notification ', error);
-            } else {
-                console.log('Notification Shown.');
-            }
         });
     });
     ehnSocket.on('closed_order', function(order) {
@@ -57,12 +51,6 @@ angular.module('ikelClientApp', [
             body: 'The food order for ' + order.from.name + ' by ' + order.author + ' has been closed.',
             icon: 'images/burger.png',
             autoClose: 24000
-        }, function(error, hide) {
-            if (error) {
-                console.log('Unable to show notification ', error);
-            } else {
-                console.log('Notification Shown.');
-            }
         });
     }); 
     
