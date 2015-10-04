@@ -15,7 +15,7 @@
                 <div class="h3">{{item.count}} x {{item.name}}</div>
                 <div class="h4 text-muted">
                     <ul class="list-inline">
-                        <li ng-repeat="author in item.authors"><i class="fa fa-square-o"></i> {{author}}</li>
+                        <li ng-repeat="(author, times) in item.authors"><i class="fa fa-square-o"></i> {{author}}<span ng-hide="{{ times < 2 }}"> (x{{times}})</span></li>
                     </ul>
                 </div>
             </td>

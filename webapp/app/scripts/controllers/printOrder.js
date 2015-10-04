@@ -14,12 +14,15 @@ angular.module('ikelClientApp').controller('PrintOrderCtrl', function ($scope, $
             summary[item.name] = {
                 name: item.name,
                 count: 0,
-                authors: [],
+                authors: {},
                 subtotal: 0,
                 price: item.price
             };
         }
-        summary[item.name].authors.push(item.author);
+        if (!summary[item.name].authors[item.author]) {
+            summary[item.name].authors[item.author] = 0;
+        }
+        summary[item.name].authors[item.author] = summary[item.name].authors[item.author] + 1;
         summary[item.name].count = summary[item.name].count + 1;
         summary[item.name].subtotal = summary[item.name].subtotal + item.price;
         summary[item.name].price = item.price;
