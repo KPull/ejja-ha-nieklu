@@ -1,13 +1,15 @@
 // web.js
-var express = require("express");
-var logfmt = require("logfmt");
+'use strict';
+
+var express = require('express');
+var logfmt = require('logfmt');
 var app = express();
 var cors = require('cors');
 var bodyParser = require('body-parser');
 var nodemailer = require('nodemailer');
 
-var mongo = require('mongodb');
-var BSON = mongo.BSONPure;
+var MongoClient = require('mongodb').MongoClient
+var ObjectId = require('mongodb').ObjectID;
 
 var mongoUri = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/ejja-ha-nieklu';
 
@@ -34,7 +36,7 @@ app.post('/order', function(req, res) {
         return;
     }
 
-    mongo.Db.connect(mongoUri, function (err, db) {
+    MongoClient.connect(mongoUri, function (err, db) {
       db.collection('orders', function(er, collection) {
         collection.insert(req.body, {safe: true}, function(er,rs) {
             if (process.env.ORDER_ALERTS_TO) {
@@ -47,55 +49,59 @@ app.post('/order', function(req, res) {
                 });
             }
             res.send(rs[0]);
+            db.close();
         });
       });
     });
 });
 
 app.post('/item', function(req, res) {
-    mongo.Db.connect(mongoUri, function (err, db) {
+    MongoClient.connect(mongoUri, function (err, db) {
       db.collection('items', function(er, collection) {
         collection.insert(req.body, {safe: true}, function(er,rs) {
             res.send(rs[0]);
+            db.close();
         });
       });
     });
 });
 
 app.delete('/item/:id', function(req, res) {
-    mongo.Db.connect(mongoUri, function (err, db) {
+    MongoClient.connect(mongoUri, function (err, db) {
       db.collection('items', function(er, collection) {
 
-        collection.remove({
-           _id: new BSON.ObjectID(req.params.id)
+        collection.deleteOne({
+           _id: new ObjectId(req.params.id)
         },function() {
           res.send();
+          db.close();
         });
       });
     });
 });
 
 app.get('/item', function(req, res) {
-    mongo.Db.connect(mongoUri, function (err, db) {
+    MongoClient.connect(mongoUri, function (err, db) {
       db.collection('items', function(er, collection) {
         collection.find({
             _order : req.query.order
         }).toArray(function (error, result) {
             res.send(result);
+            db.close();
         });
       });
     });
 });
 
 app.delete('/order/:id', function(req, res) {
-    mongo.Db.connect(mongoUri, function (err, db) {
+    MongoClient.connect(mongoUri, function (err, db) {
       db.collection('orders', function(er, collection) {
-        collection.remove({
-           _id: new BSON.ObjectID(req.params.id)
+        collection.deleteOne({
+           _id: new ObjectId(req.params.id)
         },function() {
           db.collection('items', function(er, collection) {
-            collection.remove({
-               _order: req.params.id
+            collection.deleteOne({
+               _order: new ObjectId(req.params.id)
             },function() {
               res.send();
             });
@@ -108,29 +114,30 @@ app.delete('/order/:id', function(req, res) {
 
 
 app.get('/order', function(req, res) {
-    mongo.Db.connect(mongoUri, function (err, db) {
+    MongoClient.connect(mongoUri, function (err, db) {
       db.collection('orders', function(er, collection) {
         collection.find().toArray(function(error, results) {
             res.send(results);
+            db.close();
         });
       });
     });
 });
 
 app.get('/order/:id', function(req, res) {
-    mongo.Db.connect(mongoUri, function (err, db) {
-      db.collection('orders', function(er, collection) {
-        collection.findOne({
-           _id: new BSON.ObjectID(req.params.id)
-        }, function(error, results) {
-            res.send(results);
-        });
+    MongoClient.connect(mongoUri, function (err, db) {
+      var orders = db.collection('orders');
+      orders.findOne({
+        _id: new ObjectId(req.params.id)
+      }, function(error, results) {
+        res.send(results);
+        db.close();
       });
     });
 });
 
 app.get('/pleas', function(req, res) {
-	mongo.Db.connect(mongoUri, function (err, db) {
+	MongoClient.connect(mongoUri, function (err, db) {
 		if (err) {
       console.error(err);
 			req.send(500, err);
@@ -144,13 +151,14 @@ app.get('/pleas', function(req, res) {
 				}
 			}).toArray(function(error, results) {
 				res.send(results);
+        db.close();
 			});
 		});
 	});
 });
 
 app.post('/pleas', function(req, res) {
-	mongo.Db.connect(mongoUri, function (err, db) {
+	MongoClient.connect(mongoUri, function (err, db) {
 		if (err) {
 			console.error(err);
       req.send(500, err);
@@ -161,6 +169,7 @@ app.post('/pleas', function(req, res) {
         // in case nothing is returned
         var value = (!!rs ? null : rs[0]);
 				res.send(value);
+        db.close();
 			});
 		});
 	});
