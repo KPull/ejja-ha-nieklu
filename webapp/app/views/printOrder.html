@@ -6,24 +6,34 @@
     <thead>
         <tr>
             <th>Item Name</th>
-            <th>Price</th>
+            <th class="text-right">Price</th>
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="item in order.items">
+        <tr ng-repeat="item in order.summary">
             <td>
-                <div class="h3">{{item.name}}</div>
-                <div class="h4">{{item.author}}</div>
+                <div class="h3">{{item.count}} x {{item.name}}</div>
+                <div class="h4 text-muted">
+                    <ul class="list-inline">
+                        <li ng-repeat="(author, times) in item.authors"><i class="fa fa-square-o"></i> {{author}}<span ng-hide="{{ times < 2 }}"> (x{{times}})</span></li>
+                    </ul>
+                </div>
             </td>
-            <td>
-                <div class="h3">{{(item.price || 0) | currency:"€"}}</div>
+            <td class="text-right">
+                <div class="h3">{{(item.subtotal || 0) | currency:"€"}}</div>
+                <div class="h4 text-muted">Per Unit: {{(item.price || 0) | currency:"€"}}</div>
             </td>
         </tr>
     </tbody>
     <tfoot>
         <tr>
             <td class="h3">Total:</td>
-            <td class="h3">{{order.total | currency:"€" }}</td>
+            <td class="h3 text-right"">{{order.total | currency:"€" }}</td>
         </tr>
     </tfoot>
 </table>
+<div class="row hidden-print">
+    <div class="col-xs-12">
+        <a href="#" class="btn btn-success" type="submit"><i class="fa fa-fw fa-mail-reply"></i> Go Back</a>
+    </div>
+</div>
