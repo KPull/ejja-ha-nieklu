@@ -8,9 +8,6 @@ var cors = require('cors');
 var bodyParser = require('body-parser');
 var nodemailer = require('nodemailer');
 
-var ioPort = Number(process.env.IOPORT || 3000);
-var io = require('socket.io')(ioPort);
-
 var MongoClient = require('mongodb').MongoClient
 var ObjectId = require('mongodb').ObjectID;
 
@@ -22,6 +19,12 @@ app.use(logfmt.requestLogger());
 app.use(bodyParser());
 
 app.use(express.static(__dirname + '/webapp/dist'));
+
+var port = Number(process.env.PORT || 5000);
+var server = app.listen(port, function() {
+  console.log("Listening on " + port);
+});
+var io = require('socket.io').listen(server);
 
 // Create the e-mail transport object
 var transport = nodemailer.createTransport("SMTP", {
@@ -100,12 +103,9 @@ app.get('/item', function(req, res) {
 app.delete('/order/:id', function(req, res) {
     MongoClient.connect(mongoUri, function (err, db) {
       db.collection('orders', function(er, collection) {
-        collection.findOne({
+        collection.findAndRemove({
             _id: new ObjectId(req.params.id)
         }, function(error, results) {
-            collection.deleteOne({
-               _id: new ObjectId(req.params.id)
-            }, function() {
               db.collection('items', function(er, collection) {
                 collection.remove({
                    _order: req.params.id
@@ -114,7 +114,6 @@ app.delete('/order/:id', function(req, res) {
                     res.send();
                 });
               });
-            });
         });
       });
     });
@@ -180,9 +179,4 @@ app.post('/pleas', function(req, res) {
 			});
 		});
 	});
-});
-
-var port = Number(process.env.PORT || 5000);
-app.listen(port, function() {
-  console.log("Listening on " + port);
 });

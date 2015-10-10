@@ -30,11 +30,11 @@ angular.module('ikelClientApp', [
   });
 }).config(['localStorageServiceProvider', function(localStorageServiceProvider){
   localStorageServiceProvider.setPrefix('EHN');
-}]).factory('ehnSocket', function (socketFactory, ioPrefix, webNotification) {
+}]).factory('ehnSocket', function (socketFactory, apiPrefix, webNotification) {
     var ehnSocket = socketFactory({
-        ioSocket: io.connect(ioPrefix)
+        ioSocket: io.connect(apiPrefix)
     });
-    
+
     ehnSocket.on('new_order', function(order) {
         webNotification.showNotification('New Food Order', {
             body: order.author + ' has opened a new food order for ' + order.from.name + ' on Ejja Ħa Nieklu.',
@@ -48,8 +48,8 @@ angular.module('ikelClientApp', [
             icon: 'images/burger.png',
             autoClose: 24000
         }, function() { });
-    }); 
-    
+    });
+
     return ehnSocket;
 }).run(function() {
     if (Notification) {
