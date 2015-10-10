@@ -15,7 +15,11 @@
                 <div class="h3">{{item.count}} x {{item.name}}</div>
                 <div class="h4 text-muted">
                     <ul class="list-inline">
-                        <li ng-repeat="(author, times) in item.authors"><i class="fa fa-square-o"></i> {{author}}<span ng-hide="{{ times < 2 }}"> (x{{times}})</span></li>
+                        <li ng-repeat="(author, details) in item.authors">
+                          <i class="fa fa-square-o" ng-show="!details.paid"></i>
+                          <i class="fa fa-check-square-o" ng-cloak ng-hide="!details.paid"></i>
+                          {{author}}<span ng-hide="details.count < 2"> (x{{details.count}})</span>
+                        </li>
                     </ul>
                 </div>
             </td>

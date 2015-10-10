@@ -4,9 +4,9 @@ angular.module('ikelClientApp').controller('MainCtrl', function($scope, Order, I
     orders.forEach(function(order) {
       order.items = Item.query({
         order: order._id
-      }, function(items) {
-        order.total = items.reduce(function(sum, item) {
-          return sum + parseFloat(item.price || 0);
+        }, function(items) {
+          order.total = items.reduce(function(sum, item) {
+            return sum + parseFloat(item.price || 0);
         }, 0);
       });
     });
@@ -23,6 +23,11 @@ angular.module('ikelClientApp').controller('MainCtrl', function($scope, Order, I
 
   $scope.addPleas = function() {
     console.log('adding pls');
+  };
+
+  $scope.itemChanged = function(item) {
+    // Save the item on the server
+    Item.save(item);
   };
 
   var assumedAuthor = localStorageService.get('assumedAuthor');
