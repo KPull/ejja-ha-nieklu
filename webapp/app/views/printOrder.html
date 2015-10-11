@@ -34,6 +34,10 @@
             <td class="h3">Total:</td>
             <td class="h3 text-right">{{order.total | currency:"€" }}</td>
         </tr>
+        <tr>
+            <td class="h3">Paid:</td>
+            <td class="h3 text-right">{{order.paid | currency:"€" }}</td>
+        </tr>
     </tfoot>
 </table>
 <div class="row hidden-print">

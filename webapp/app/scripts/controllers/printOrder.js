@@ -7,6 +7,9 @@ angular.module('ikelClientApp').controller('PrintOrderCtrl', function ($scope, $
       order.total = items.reduce(function(sum, item) {
         return sum + parseFloat(item.price || 0);
       }, 0);
+      order.paid = items.reduce(function(sum, item) {
+        return sum + (item.paid ? parseFloat(item.price || 0) : 0);
+      }, 0);
 
       // Shrink the order
       order.summary = items.reduce(function(summary, item) {
