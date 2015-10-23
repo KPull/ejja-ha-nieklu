@@ -26,8 +26,55 @@
           <script src="bower_components/json3/lib/json3.min.js"></script>
         <![endif]-->
 
-        <!-- Add your site or application content here. -->
-        <div class="container" ng-view=""></div>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-2 col-md-offset-2" ng-controller="OrdersListCtrl">
+              <div class="row">
+                <div class="col-xs-12">
+                  <img src="images/front-logo.png" class="front-logo" alt="Ejja Ħa Nieklu Logo" />
+                </div>
+              </div>
+              <div ng-cloak ng-show="!orders.$resolved" class="row navigation-row">
+                <div class="col-xs-12">
+                  <div class="well">
+                    <i class="fa fa-spinner fa-spin"></i> Loading Orders...
+                  </div>
+                </div>
+              </div>
+              <div ng-cloak ng-show="orders.$resolved && orders.error" class="row navigation-row">
+                <div class="col-xs-12">
+                  <div class="alert alert-danger">
+                    <i class="fa fa-exclamation-circle"></i> An error has occurred while loading the list of open orders. Refreshing the page might fix this issue.
+                  </div>
+                </div>
+              </div>
+              <div ng-cloak ng-show="orders.$resolved && orders.length == 0" class="row navigation-row">
+                <div class="col-xs-12">
+                  <div class="well">
+                    There are no orders yet. Click on the <em>Start New Order</em> button to open a new order.
+                  </div>
+                </div>
+              </div>
+              <div ng-cloak ng-show="orders.$resolved && orders.length > 0" class="row navigation-row">
+                <div class="col-xs-12">
+                  <div>
+                    <ul class="nav nav-pills nav-stacked">
+                      <li ng-repeat="order in orders" role="presentation" class="active"><a href="#">{{order.from.name}}</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="row navigation-row">
+                <div class="col-xs-12">
+                  <a role="presentation" class="btn btn-success btn-block" href="#"><i class="fa fa-plus-circle fa-fw"></i> Start New Order</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              Right
+            </div>
+          </div>
+        </div>
 
         <script>
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -76,6 +123,7 @@
         <script src="scripts/services/item.js"></script>
         <script src="scripts/services/plea.js"></script>
 
+        <script src="scripts/controllers/ordersList.js"></script>
         <script src="scripts/controllers/createOrder.js"></script>
         <script src="scripts/controllers/createItem.js"></script>
         <script src="scripts/controllers/printOrder.js"></script>
