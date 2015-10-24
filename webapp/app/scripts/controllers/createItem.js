@@ -2,7 +2,7 @@
 
 angular.module('ikelClientApp').controller('CreateItemCtrl', function ($scope, $routeParams, Item, Order, localStorageService) {
 
-  $scope.orderId = $scope.order._id;
+  $scope.orderId = $routeParams.orderId;
   $scope.choices = [];
   $scope.resolved = true;
 
@@ -36,6 +36,15 @@ angular.module('ikelClientApp').controller('CreateItemCtrl', function ($scope, $
      * pollute the item object with unnecessary fields (like email).
      */
     $scope.item.author = assumedAuthor.author;
+  }
+
+  $scope.itemNameChanged = function() {
+    var found = $scope.order.items.filter(function(item) {
+      return item.name === $scope.item.name;
+    });
+    if (found.length > 0) {
+      $scope.item.price = found[0].price;
+    }
   }
 
   $scope.save = function() {
