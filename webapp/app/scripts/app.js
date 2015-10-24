@@ -4,6 +4,7 @@ angular.module('ikelClientApp', [
   'ngResource',
   'ngSanitize',
   'ngRoute',
+  'ngAnimate',
   'ui.bootstrap',
   'ui.bootstrap.tabs',
   'LocalStorageModule'
@@ -14,6 +15,9 @@ angular.module('ikelClientApp', [
   }).when('/createOrder', {
     templateUrl: 'views/createOrder.html',
     controller: 'CreateOrderCtrl'
+  }).when('/order/:orderId', {
+    templateUrl: 'views/order.html',
+    controller: 'OrderCtrl'
   }).when('/createItem/:orderId', {
     templateUrl: 'views/createItem.html',
     controller: 'CreateItemCtrl'

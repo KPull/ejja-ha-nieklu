@@ -1,12 +1,13 @@
 'use strict';
 
-angular.module('ikelClientApp').controller('CreateItemCtrl', function ($scope, $location, $routeParams, Item, Order, localStorageService) {
+angular.module('ikelClientApp').controller('CreateItemCtrl', function ($scope, $routeParams, Item, Order, localStorageService) {
 
-  $scope.orderId = $routeParams.orderId;
+  $scope.orderId = $scope.order._id;
   $scope.choices = [];
+  $scope.resolved = true;
 
   Item.query({ order: $scope.orderId }).$promise.then(function(items) {
-    // Reduce all the resouces into a single object with thne name as
+    // Reduce all the resouces into a single object with the name as
     // the key of the object (using lower case to ignore case).
     // This will automatically remove any duplicates.
     var reducedObject = items.reduce(function(prev, item) {
@@ -38,17 +39,14 @@ angular.module('ikelClientApp').controller('CreateItemCtrl', function ($scope, $
   }
 
   $scope.save = function() {
+    $scope.resolved = false;
+    var item = angular.extend({}, $scope.item);
     Item.save($scope.item, function() {
-      $location.path('/');
+      $scope.item.name = '';
+      $scope.item.price = '';
+      $scope.resolved = true;
+      $scope.$emit('item_added', item);
     });
   };
 
-  $scope.saveAndAdd = function() {
-    Item.save($scope.item, function() {
-      $scope.item = {
-        _order: $routeParams.orderId,
-        author: $scope.item.author
-      };
-    });
-  };
 });
