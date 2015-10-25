@@ -11,10 +11,18 @@ angular.module('ikelClientApp').controller('OrdersListCtrl', function($scope, Or
     $scope.orders.push(order);
   });
 
+  $scope.$on('order_deleted', function(event, order) {
+    $scope.orders = $scope.orders.filter(function(element) {
+      return element._id !== order._id;
+    });
+    $scope.orders.$resolved = true;
+  });
+
   $scope.$on('$routeChangeSuccess', function(event, current) {
     // Look at the new route. If it's an order form, mark that order as currently viewing
     $scope.orders.forEach(function(order) {
-      order.viewing = current.originalPath === '/order/:orderId' && current.params.orderId === order._id;
+      order.viewing = (current.originalPath === '/order/:orderId' || current.originalPath === '/deleteOrder/:orderId')
+        && current.params.orderId === order._id;
     });
   })
 

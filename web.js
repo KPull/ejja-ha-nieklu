@@ -69,8 +69,7 @@ app.post('/item', function(req, res) {
 app.delete('/item/:id', function(req, res) {
     MongoClient.connect(mongoUri, function (err, db) {
       db.collection('items', function(er, collection) {
-
-        collection.deleteOne({
+        collection.remove({
            _id: new ObjectId(req.params.id)
         },function() {
           res.send();
@@ -96,11 +95,11 @@ app.get('/item', function(req, res) {
 app.delete('/order/:id', function(req, res) {
     MongoClient.connect(mongoUri, function (err, db) {
       db.collection('orders', function(er, collection) {
-        collection.deleteOne({
+        collection.remove({
            _id: new ObjectId(req.params.id)
         },function() {
           db.collection('items', function(er, collection) {
-            collection.deleteOne({
+            collection.remove({
                _order: new ObjectId(req.params.id)
             },function() {
               res.send();

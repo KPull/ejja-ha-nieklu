@@ -1,5 +1,9 @@
 <div class="well" ng-show="!resolved"><i class="fa fa-spinner fa-spin"></i> Loading order. Please wait...</div>
 <div ng-show="resolved">
+  <div class="pull-right">
+    <a class="btn btn-danger" href="#/deleteOrder/{{order._id}}"><i class="fa fa-times"></i> Close Order</a>
+    <button class="btn btn-success"><i class="fa fa-print"></i> Print Order</button>
+  </div>
   <h1>{{order.from.name}}</h1>
   <div class="h4">Order by: {{order.author}} (<a href="mailto:{{order.email}}">{{order.email}}</a>)</div>
   <div class="h4" ng-cloak ng-show="order.menuLink">Menu: <a ng-href="{{order.menuLink}}">{{order.menuLink}}</a></div>
@@ -21,7 +25,7 @@
               <div class="h4">{{(item.price || 0) | currency:"€"}}</div>
           </td>
           <td>
-              <div><button class="btn btn-sm btn-danger pull-right" ng-click="deleteItem(item, order, $index)"><i class="fa fa-trash-o"></i></button></div>
+              <div><button class="btn btn-sm btn-danger pull-right" ng-click="deleteItem(item, $index)"><i class="fa fa-trash-o"></i></button></div>
           </td>
         </tr>
         <tr ng-show="order.items.length == 0">

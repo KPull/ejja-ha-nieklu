@@ -13,6 +13,13 @@ angular.module('ikelClientApp').controller('OrderCtrl', function ($scope, $locat
     }, 0);
   }
 
+  $scope.deleteItem = function(item, index) {
+    item.$delete(function() {
+      $scope.order.items.splice(index, 1);
+      calculateTotals();
+    });
+  };
+
   // Promise fires after both promises resolve
   $q.all({
     order: $scope.order.$promise,

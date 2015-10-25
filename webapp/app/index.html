@@ -48,7 +48,7 @@
                   </div>
                 </div>
               </div>
-              <div ng-cloak ng-show="orders.$resolved && orders.length == 0" class="row navigation-row">
+              <div ng-cloak ng-show="orders.$resolved && !orders.error && orders.length == 0" class="row navigation-row">
                 <div class="col-xs-12">
                   <div class="well">
                     There are no orders yet. Click on the <em>Start New Order</em> button to open a new order.
@@ -76,7 +76,15 @@
 
             </div>
           </div>
+          <div class="row" style="margin-top: 1em">
+            <div class="col-md-offset-2 col-md-8">
+              <div class="footer">
+                  <p>Ejja Ħa Nieklu App. By: <a href="https://github.com/KPull">@Kyle</a> &amp; <a href="https://github.com/camilleriluke">@Luke</a>. <span class="pull-right">Wish to <a href="https://github.com/camilleriluke/ejja-ha-nieklu">contribute?</a></span></p>
+              </div>
+            </div>
+          </div>
         </div>
+
 
         <script>
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
