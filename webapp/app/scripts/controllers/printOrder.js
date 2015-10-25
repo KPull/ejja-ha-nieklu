@@ -7,7 +7,7 @@ angular.module('ikelClientApp').controller('PrintOrderCtrl', function ($scope, $
       order.total = items.reduce(function(sum, item) {
         return sum + parseFloat(item.price || 0);
       }, 0);
-      
+
       // Shrink the order
       order.summary = items.reduce(function(summary, item) {
         if (!summary[item.name]) {
@@ -24,7 +24,7 @@ angular.module('ikelClientApp').controller('PrintOrderCtrl', function ($scope, $
         }
         summary[item.name].authors[item.author] = summary[item.name].authors[item.author] + 1;
         summary[item.name].count = summary[item.name].count + 1;
-        summary[item.name].subtotal = summary[item.name].subtotal + item.price;
+        summary[item.name].subtotal = summary[item.name].subtotal + parseFloat(item.price);
         summary[item.name].price = item.price;
         return summary;
       }, { });

@@ -1,8 +1,8 @@
 <div class="well" ng-show="!resolved"><i class="fa fa-spinner fa-spin"></i> Loading order. Please wait...</div>
 <div ng-show="resolved">
   <div class="pull-right">
-    <a class="btn btn-danger" href="#/deleteOrder/{{order._id}}"><i class="fa fa-times"></i> Close Order</a>
-    <button class="btn btn-success"><i class="fa fa-print"></i> Print Order</button>
+    <a class="btn btn-danger" ng-href="#/deleteOrder/{{order._id}}"><i class="fa fa-times"></i> Close Order</a>
+    <a class="btn btn-success" href="#/printOrder/{{order._id}}"><i class="fa fa-print"></i> Print Order</a>
   </div>
   <h1>{{order.from.name}}</h1>
   <div class="h4">Order by: {{order.author}} (<a href="mailto:{{order.email}}">{{order.email}}</a>)</div>

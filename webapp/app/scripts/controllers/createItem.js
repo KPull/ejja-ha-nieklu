@@ -50,6 +50,7 @@ angular.module('ikelClientApp').controller('CreateItemCtrl', function ($scope, $
   $scope.save = function() {
     $scope.resolved = false;
     var item = angular.extend({}, $scope.item);
+    item.price = parseFloat(item.price);
     localStorageService.set('assumedAuthor', {author: $scope.item.author});
     Item.save($scope.item, function() {
       $scope.item.name = '';
