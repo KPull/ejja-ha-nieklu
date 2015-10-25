@@ -10,8 +10,8 @@ angular.module('ikelClientApp', [
   'LocalStorageModule'
 ]).config(function($routeProvider) {
   $routeProvider.when('/', {
-    templateUrl: 'views/main.html',
-    controller: 'MainCtrl'
+    templateUrl: 'views/landing.html',
+    controller: 'LandingCtrl'
   }).when('/createOrder', {
     templateUrl: 'views/createOrder.html',
     controller: 'CreateOrderCtrl'
