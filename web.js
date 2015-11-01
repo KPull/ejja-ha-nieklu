@@ -44,7 +44,7 @@ app.post('/order', function(req, res) {
 
     MongoClient.connect(mongoUri, function (err, db) {
       db.collection('orders', function(er, collection) {
-        collection.insert(req.body, {safe: true}, function(er,rs) {
+        collection.insert(req.body, {w:1}, function(er,rs) {
             if (process.env.ORDER_ALERTS_TO) {
                 // Send an e-mail if variable is set
                 transport.sendMail({
@@ -62,24 +62,35 @@ app.post('/order', function(req, res) {
     });
 });
 
-app.post('/item', function(req, res) {
+var handleItemPost = function(req, res) {
     MongoClient.connect(mongoUri, function (err, db) {
       db.collection('items', function(er, collection) {
-        collection.insert(req.body, {safe: true}, function(er,rs) {
+      collection.save(req.body, {w:1}, function(er,rs) {
             res.send(rs[0]);
             db.close();
         });
       });
     });
+}
+
+app.post('/item', function(req, res) {
+  handleItemPost(req, res);
+});
+
+app.post('/item/:id', function(req, res) {
+    // Make sure the id used in the URL is the same in the object
+    req.body['_id'] = new ObjectId(req.params.id);
+
+    handleItemPost(req, res)
 });
 
 app.delete('/item/:id', function(req, res) {
     MongoClient.connect(mongoUri, function (err, db) {
       db.collection('items', function(er, collection) {
 
-        collection.deleteOne({
+        collection.remove({
            _id: new ObjectId(req.params.id)
-        },function() {
+        },{w:1},function() {
           res.send();
           db.close();
         });
@@ -171,7 +182,7 @@ app.post('/pleas', function(req, res) {
 		}
 		db.collection('pleas', function(er, collection) {
 			req.body.timestamp = new Date();
-			collection.insert(req.body, {safe: true}, function(er,rs) {
+			collection.insert(req.body, {w:1}, function(er,rs) {
         // in case nothing is returned
         var value = (!!rs ? null : rs[0]);
 				res.send(value);

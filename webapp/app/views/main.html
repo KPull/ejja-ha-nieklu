@@ -85,16 +85,27 @@
                             </td>
                             <td>
                                 <div class="h3">{{(item.price || 0) | currency:"€"}}</div>
+
                             </td>
                             <td>
-                                <div><button class="btn btn-sm btn-danger pull-right" ng-click="deleteItem(item, order, $index)"><i class="fa fa-trash-o"></i></button></div>
+                              <div class="pull-right">
+                                  <label class="btn btn-success btn-sm">
+                                    <input type="checkbox" ng-model="item.paid" ng-change="itemChanged(item, order)"></input> Paid
+                                  </label>
+                                  <button class="btn btn-sm btn-danger" ng-click="deleteItem(item, order, $index)"><i class="fa fa-trash-o"></i></button>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
                     <tfoot>
                         <tr>
                             <td class="h3">Total:</td>
-                            <td class="h3">{{order.total | currency:"€" }}</td>
+                            <td class="h3">{{order.totals.subtotal | currency:"€" }}</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="h3">Paid:</td>
+                            <td class="h3">{{order.totals.paid | currency:"€" }}</td>
                             <td></td>
                         </tr>
                     </tfoot>

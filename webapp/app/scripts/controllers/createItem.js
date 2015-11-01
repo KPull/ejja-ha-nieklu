@@ -38,12 +38,14 @@ angular.module('ikelClientApp').controller('CreateItemCtrl', function ($scope, $
   }
 
   $scope.save = function() {
+    $scope.item.paid = false;
     Item.save($scope.item, function() {
       $location.path('/');
     });
   };
 
   $scope.saveAndAdd = function() {
+    $scope.item.paid = false;
     Item.save($scope.item, function() {
       $scope.item = {
         _order: $routeParams.orderId,
