@@ -87,7 +87,6 @@ app.post('/item/:id', function(req, res) {
 app.delete('/item/:id', function(req, res) {
     MongoClient.connect(mongoUri, function (err, db) {
       db.collection('items', function(er, collection) {
-
         collection.remove({
            _id: new ObjectId(req.params.id)
         },{w:1},function() {
@@ -114,17 +113,18 @@ app.get('/item', function(req, res) {
 app.delete('/order/:id', function(req, res) {
     MongoClient.connect(mongoUri, function (err, db) {
       db.collection('orders', function(er, collection) {
-        collection.findAndRemove({
-            _id: new ObjectId(req.params.id)
-        }, function(error, results) {
-              db.collection('items', function(er, collection) {
-                collection.remove({
-                   _order: req.params.id
-                },function() {
-                    io.emit('closed_order', results);
-                    res.send();
-                });
-              });
+        collection.remove({
+           _id: new ObjectId(req.params.id)
+        },function() {
+          db.collection('items', function(er, collection) {
+            collection.remove({
+               _order: new ObjectId(req.params.id)
+            },function() {
+              io.emit('closed_order', results);
+              res.send();
+            });
+          });
+
         });
       });
     });

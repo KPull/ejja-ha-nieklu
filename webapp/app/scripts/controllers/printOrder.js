@@ -29,7 +29,7 @@ angular.module('ikelClientApp').controller('PrintOrderCtrl', function ($scope, $
         // A person needs to have paid ALL their like-named items for it to show as paid on the summary
         summary[item.name].authors[item.author].paid = summary[item.name].authors[item.author].paid && item.paid;
         summary[item.name].count = summary[item.name].count + 1;
-        summary[item.name].subtotal = summary[item.name].subtotal + item.price;
+        summary[item.name].subtotal = summary[item.name].subtotal + parseFloat(item.price);
         summary[item.name].price = item.price;
         return summary;
       }, { });

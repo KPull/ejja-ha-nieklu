@@ -4,6 +4,7 @@ angular.module('ikelClientApp', [
   'ngResource',
   'ngSanitize',
   'ngRoute',
+  'ngAnimate',
   'ui.bootstrap',
   'ui.bootstrap.tabs',
   'LocalStorageModule',
@@ -11,11 +12,14 @@ angular.module('ikelClientApp', [
   'angular-web-notification'
 ]).config(function($routeProvider) {
   $routeProvider.when('/', {
-    templateUrl: 'views/main.html',
-    controller: 'MainCtrl'
+    templateUrl: 'views/landing.html',
+    controller: 'LandingCtrl'
   }).when('/createOrder', {
     templateUrl: 'views/createOrder.html',
     controller: 'CreateOrderCtrl'
+  }).when('/order/:orderId', {
+    templateUrl: 'views/order.html',
+    controller: 'OrderCtrl'
   }).when('/createItem/:orderId', {
     templateUrl: 'views/createItem.html',
     controller: 'CreateItemCtrl'
