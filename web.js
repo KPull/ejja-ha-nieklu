@@ -20,6 +20,12 @@ app.use(bodyParser());
 
 app.use(express.static(__dirname + '/webapp/dist'));
 
+var port = Number(process.env.PORT || 5000);
+var server = app.listen(port, function() {
+  console.log("Listening on " + port);
+});
+var io = require('socket.io').listen(server);
+
 // Create the e-mail transport object
 var transport = nodemailer.createTransport("SMTP", {
     service: "Gmail",
@@ -49,6 +55,7 @@ app.post('/order', function(req, res) {
                 });
             }
             res.send(rs[0]);
+            io.emit('new_order', req.body);
             db.close();
         });
       });
@@ -96,22 +103,21 @@ app.get('/item', function(req, res) {
 app.delete('/order/:id', function(req, res) {
     MongoClient.connect(mongoUri, function (err, db) {
       db.collection('orders', function(er, collection) {
-        collection.deleteOne({
-           _id: new ObjectId(req.params.id)
-        },function() {
-          db.collection('items', function(er, collection) {
-            collection.deleteOne({
-               _order: new ObjectId(req.params.id)
-            },function() {
-              res.send();
-            });
-          });
-
+        collection.findAndRemove({
+            _id: new ObjectId(req.params.id)
+        }, function(error, results) {
+              db.collection('items', function(er, collection) {
+                collection.remove({
+                   _order: req.params.id
+                },function() {
+                    io.emit('closed_order', results);
+                    res.send();
+                });
+              });
         });
       });
     });
 });
-
 
 app.get('/order', function(req, res) {
     MongoClient.connect(mongoUri, function (err, db) {
@@ -139,7 +145,7 @@ app.get('/order/:id', function(req, res) {
 app.get('/pleas', function(req, res) {
 	MongoClient.connect(mongoUri, function (err, db) {
 		if (err) {
-      console.error(err);
+            console.error(err);
 			req.send(500, err);
 		}
 		db.collection('pleas', function(er, collection) {
@@ -173,9 +179,4 @@ app.post('/pleas', function(req, res) {
 			});
 		});
 	});
-});
-
-var port = Number(process.env.PORT || 5000);
-app.listen(port, function() {
-  console.log("Listening on " + port);
 });
