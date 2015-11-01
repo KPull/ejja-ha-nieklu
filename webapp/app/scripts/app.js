@@ -32,31 +32,35 @@ angular.module('ikelClientApp', [
   }).otherwise({
     redirectTo: '/'
   });
-}).config(['localStorageServiceProvider', function(localStorageServiceProvider){
+}).config(['localStorageServiceProvider', function(
+  localStorageServiceProvider) {
   localStorageServiceProvider.setPrefix('EHN');
-}]).factory('ehnSocket', function (socketFactory, apiPrefix, webNotification) {
-    var ehnSocket = socketFactory({
-        ioSocket: io.connect(apiPrefix)
-    });
+}]).factory('ehnSocket', function($rootScope, socketFactory, apiPrefix) {
+  var ehnSocket = socketFactory({
+    ioSocket: io.connect(apiPrefix)
+  });
+  return ehnSocket;
+}).run(function(ehnSocket, $rootScope, webNotification) {
+  if (Notification) {
+    Notification.requestPermission();
+  }
 
-    ehnSocket.on('new_order', function(order) {
-        webNotification.showNotification('New Food Order', {
-            body: order.author + ' has opened a new food order for ' + order.from.name + ' on Ejja Ħa Nieklu.',
-            icon: 'images/burger.png',
-            autoClose: 24000
-        }, function() { });
-    });
-    ehnSocket.on('closed_order', function(order) {
-        webNotification.showNotification('Food Order Closed', {
-            body: 'The food order for ' + order.from.name + ' by ' + order.author + ' has been closed.',
-            icon: 'images/burger.png',
-            autoClose: 24000
-        }, function() { });
-    });
-
-    return ehnSocket;
-}).run(function() {
-    if (Notification) {
-        Notification.requestPermission();
-    }
+  ehnSocket.on('new_order', function(order) {
+    webNotification.showNotification('New Food Order', {
+      body: order.author + ' has opened a new food order for ' +
+        order.from.name + ' on Ejja Ħa Nieklu.',
+      icon: 'images/burger.png',
+      autoClose: 24000
+    }, function() {});
+    $rootScope.$broadcast('REMOTE_ORDER_ADDED', order);
+  });
+  ehnSocket.on('closed_order', function(order) {
+    webNotification.showNotification('Food Order Closed', {
+      body: 'The food order for ' + order.from.name + ' by ' +
+        order.author + ' has been closed.',
+      icon: 'images/burger.png',
+      autoClose: 24000
+    }, function() {});
+    $rootScope.$broadcast('REMOTE_ORDER_REMOVED', order);
+  });
 });
