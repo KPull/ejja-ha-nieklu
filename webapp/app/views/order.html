@@ -35,15 +35,15 @@
               <td colspan="100">
                 <form class="form-inline" ng-submit="save()" ng-controller="CreateItemCtrl">
                   <div class="form-group">
-                    <input type="text" class="form-control" ng-model="item.name" typeahead="choice.name for choice in choices | filter:$viewValue | limitTo: 8" typeahead-on-select="itemNameChanged()" ng-change="itemNameChanged()" placeholder="Item"/>
+                    <input type="text" class="form-control" required ng-model="item.name" typeahead="choice.name for choice in choices | filter:$viewValue | limitTo: 8" typeahead-on-select="itemNameChanged()" ng-change="itemNameChanged()" placeholder="Item"/>
                   </div>
                   <div class="form-group">
-                    <input type="numeric" class="form-control" ng-model="item.author" placeholder="Your Name"/>
+                    <input type="numeric" class="form-control" required ng-model="item.author" placeholder="Your Name"/>
                   </div>
                   <div class="form-group">
                     <div class="input-group">
                       <span class="input-group-addon"><i class="fa fa-euro"></i></span>
-                      <input type="numeric" class="form-control" ng-model="item.price" placeholder="Price"/>
+                      <input type="numeric" class="form-control" required ng-model="item.price" placeholder="Price"/>
                     </div>
                   </div>
                   <div class="pull-right">
