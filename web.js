@@ -62,8 +62,8 @@ app.post('/order', function(req, res) {
               '. \r\nCheck it out over on the Ejja Ha Nieklu app on http://ejja-ha-nieklu.herokuapp.com/ :)'
           });
         }
-        res.send(rs[0]);
-        io.emit('new_order', rs[0]);
+        res.send(rs.ops[0]);
+        io.emit('new_order', rs.ops[0]);
         db.close();
       });
     });
@@ -76,7 +76,7 @@ var handleItemPost = function(req, res) {
       collection.save(req.body, {
         w: 1
       }, function(er, rs) {
-        res.send(rs[0]);
+        res.send(rs.ops[0]);
         db.close();
       });
     });
