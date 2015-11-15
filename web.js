@@ -48,7 +48,7 @@ app.post('/order', function(req, res) {
                     text: 'An order has been opened for ' + req.body.from.name + '. \r\nCheck it out over on the Ejja Ha Nieklu app on http://ejja-ha-nieklu.herokuapp.com/ :)'
                 });
             }
-            res.send(rs[0]);
+            res.send(JSON.stringify(rs.ops[0]));
             db.close();
         });
       });
@@ -106,7 +106,6 @@ app.delete('/order/:id', function(req, res) {
               res.send();
             });
           });
-
         });
       });
     });
