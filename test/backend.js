@@ -319,7 +319,131 @@ describe('Ejja Ħa Nieklu Backend Node.JS Module', function() {
           done();
         }
       });
-    })
+    });
+    it('should handle a request for an inexistant item', function(done) {
+      request('http://localhost:' + port + '/item/000000000000000000001009', function(err, resp, body) {
+        if (err) {
+          done(new Error('Error during request', err));
+        } else {
+          expect(resp.statusCode).toBe(404, 'Received HTTP response code %s but should have received HTTP response code %s');
+          done();
+        }
+      });
+    });
+  });
+
+  describe('Item Creation', function() {
+    var orders = [{
+      _id : '000000000000000000000001',
+      restaurant : 'TGI Fridays',
+    }];
+    var items = [{
+      _id : '000000000000000000000006',
+      _order: '000000000000000000000001',
+      name : 'Burger',
+      author : 'Kyle',
+      price : '4.95'
+    }];
+    before('Prepare Mongo', function() {
+      return mongo(mongoUri, { orders: orders, items: items });
+    });
+    it('should add an item to an order', function(done) {
+      request({
+        url: 'http://localhost:' + port + '/item',
+        method: 'POST',
+        json: true,
+        body: {
+          _order: '000000000000000000000001',
+          name: 'Orange',
+          price: '3.50',
+          author: 'John'
+        }
+      }, function(err, resp, body) {
+        if (err) {
+          done(new Error('Error during request', err));
+        } else {
+          expect(resp.statusCode).toBe(200, 'Received HTTP response code %s but should have received HTTP response code %s');
+          done();
+        }
+      });
+    });
+    it('should reject adding an item to an inexistant order', function(done) {
+      request({
+        url: 'http://localhost:' + port + '/item',
+        method: 'POST',
+        json: true,
+        body: {
+          _order: '000000000000000000000002',
+          name: 'Orange',
+          price: '3.50',
+          author: 'John'
+        }
+      }, function(err, resp, body) {
+        if (err) {
+          done(new Error('Error during request', err));
+        } else {
+          expect(resp.statusCode).toBe(404, 'Received HTTP response code %s but should have received HTTP response code %s');
+          done();
+        }
+      });
+    });
+    it('should reject adding an item without a name', function(done) {
+      request({
+        url: 'http://localhost:' + port + '/item',
+        method: 'POST',
+        json: true,
+        body: {
+          _order: '000000000000000000000001',
+          price: '3.50',
+          author: 'John'
+        }
+      }, function(err, resp, body) {
+        if (err) {
+          done(new Error('Error during request', err));
+        } else {
+          expect(resp.statusCode).toBe(400, 'Received HTTP response code %s but should have received HTTP response code %s');
+          done();
+        }
+      });
+    });
+    it('should reject adding an item without an author', function(done) {
+      request({
+        url: 'http://localhost:' + port + '/item',
+        method: 'POST',
+        json: true,
+        body: {
+          _order: '000000000000000000000001',
+          name: 'Orange',
+          price: '3.50'
+        }
+      }, function(err, resp, body) {
+        if (err) {
+          done(new Error('Error during request', err));
+        } else {
+          expect(resp.statusCode).toBe(400, 'Received HTTP response code %s but should have received HTTP response code %s');
+          done();
+        }
+      });
+    });
+    it('should reject adding an item without a price', function(done) {
+      request({
+        url: 'http://localhost:' + port + '/item',
+        method: 'POST',
+        json: true,
+        body: {
+          _order: '000000000000000000000001',
+          name: 'Orange',
+          author: 'John'
+        }
+      }, function(err, resp, body) {
+        if (err) {
+          done(new Error('Error during request', err));
+        } else {
+          expect(resp.statusCode).toBe(400, 'Received HTTP response code %s but should have received HTTP response code %s');
+          done();
+        }
+      });
+    });
   });
 
   it('listens on the specified port', function(done) {
@@ -328,4 +452,4 @@ describe('Ejja Ħa Nieklu Backend Node.JS Module', function() {
       done();
     });
   });
-})
+});
