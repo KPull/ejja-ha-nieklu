@@ -436,6 +436,66 @@ describe('Ejja Ħa Nieklu Backend Node.JS Module', function() {
     });
   });
 
+  describe('Item Deletion', function() {
+    var orders = [{
+      _id : '000000000000000000000001',
+      restaurant : 'TGI Fridays',
+    }, {
+      _id : '000000000000000000000002',
+      restaurant : 'McDonalds',
+    }];
+    var items = [{
+      _id : '000000000000000000000006',
+      _order: '000000000000000000000001',
+      name : 'Burger',
+      author : 'Kyle',
+      price : '4.95'
+    }, {
+      _id : '000000000000000000000007',
+      _order: '000000000000000000000001',
+      name : 'Pizza',
+      author : 'Bob',
+      price : '9.95'
+    }, {
+      _id : '000000000000000000000008',
+      _order: '000000000000000000000002',
+      name : 'Pasta',
+      author : 'Luke',
+      price : '7.70'
+    }];
+    before('Prepare Mongo', function() {
+      return mongo(mongoUri, { orders: orders, items: items });
+    });
+    it('should delete the specified item', function(done) {
+      request({
+        url: 'http://localhost:' + port + '/item/000000000000000000000006',
+        method: 'DELETE',
+        json: true
+      }, function(err, resp, body) {
+        if (err) {
+          done(new Error('Error during request', err));
+        } else {
+          expect(resp.statusCode).toBe(200, 'Received HTTP response code %s but should have received HTTP response code %s');
+          done();
+        }
+      });
+    });
+    it('should reject deleting an inexistant item', function(done) {
+      request({
+        url: 'http://localhost:' + port + '/item/000000000000000100000006',
+        method: 'DELETE',
+        json: true
+      }, function(err, resp, body) {
+        if (err) {
+          done(new Error('Error during request', err));
+        } else {
+          expect(resp.statusCode).toBe(404, 'Received HTTP response code %s but should have received HTTP response code %s');
+          done();
+        }
+      });
+    });
+  });
+
   it('listens on the specified port', function(done) {
     request('http://localhost:' + port, function(err, resp, body) {
       expect(resp.statusCode).toBe(200);
