@@ -320,16 +320,6 @@ describe('Ejja Ħa Nieklu Backend Node.JS Module', function() {
         }
       });
     });
-    it('should handle a request for an inexistant item', function(done) {
-      request('http://localhost:' + port + '/item/000000000000000000001009', function(err, resp, body) {
-        if (err) {
-          done(new Error('Error during request', err));
-        } else {
-          expect(resp.statusCode).toBe(404, 'Received HTTP response code %s but should have received HTTP response code %s');
-          done();
-        }
-      });
-    });
   });
 
   describe('Item Creation', function() {
