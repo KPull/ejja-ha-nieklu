@@ -18,5 +18,9 @@
     "mongodb": "=2.0.45",
     "nodemailer": "=0.6.3",
     "redis-url": "=0.2.0"
+  },
+  "devDependencies": {
+    "expect": "^1.13.0",
+    "request": "^2.65.0"
   }
 }
