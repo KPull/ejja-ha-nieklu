@@ -15,7 +15,11 @@
                 <div class="h3">{{item.count}} x {{item.name}}</div>
                 <div class="h4 text-muted">
                     <ul class="list-inline">
-                        <li ng-repeat="(author, times) in item.authors"><i class="fa fa-square-o"></i> {{author}}<span ng-hide="{{ times < 2 }}"> (x{{times}})</span></li>
+                        <li ng-repeat="(author, details) in item.authors">
+                          <i class="fa fa-square-o" ng-show="!details.paid"></i>
+                          <i class="fa fa-check-square-o" ng-cloak ng-hide="!details.paid"></i>
+                          {{author}}<span ng-hide="details.count < 2"> (x{{details.count}})</span>
+                        </li>
                     </ul>
                 </div>
             </td>
@@ -30,10 +34,14 @@
             <td class="h3">Total:</td>
             <td class="h3 text-right">{{order.total | currency:"€" }}</td>
         </tr>
+        <tr>
+            <td class="h3">Paid:</td>
+            <td class="h3 text-right">{{order.paid | currency:"€" }}</td>
+        </tr>
     </tfoot>
 </table>
 <div class="row hidden-print">
     <div class="col-xs-12">
-        <a href="#" class="btn btn-success" type="submit"><i class="fa fa-fw fa-mail-reply"></i> Go Back</a>
+        <a ng-href="#/order/{{order._id}}" class="btn btn-success" type="submit"><i class="fa fa-fw fa-mail-reply"></i> Go Back</a>
     </div>
 </div>

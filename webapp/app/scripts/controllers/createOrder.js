@@ -1,6 +1,7 @@
 'use strict';
 
-angular.module('ikelClientApp').controller('CreateOrderCtrl', function ($scope, $location, Order, localStorageService) {
+angular.module('ikelClientApp').controller('CreateOrderCtrl', function(
+  $rootScope, $scope, $location, Order, localStorageService) {
 
   var assumedAuthor = localStorageService.get('assumedAuthor');
   if (assumedAuthor) {
@@ -9,16 +10,16 @@ angular.module('ikelClientApp').controller('CreateOrderCtrl', function ($scope, 
   }
 
   $scope.save = function() {
-    Order.save($scope.order, function() {
-      $location.path('/');
-
+    var order = Order.save($scope.order, function(order) {
       var currentAuthor = {
-        author : $scope.order.author,
-        email : $scope.order.email
+        author: $scope.order.author,
+        email: $scope.order.email
       };
 
       localStorageService.add('assumedAuthor', currentAuthor);
 
+      $location.path('/order/' + order._id);
+      $rootScope.$broadcast('order_added', order);
     });
   };
 
