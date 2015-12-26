@@ -7,6 +7,7 @@ var app = express();
 var cors = require('cors');
 var bodyParser = require('body-parser');
 var nodemailer = require('nodemailer');
+var Order = require('./ikel_modules/order.js');
 
 var MongoClient = require('mongodb').MongoClient
 var ObjectId = require('mongodb').ObjectID;
@@ -37,40 +38,6 @@ var transport = nodemailer.createTransport("SMTP", {
     user: process.env.MAILER_USERNAME,
     pass: process.env.MAILER_PASSWORD
   }
-});
-
-app.post('/order', function(req, res) {
-
-  if (!req.body.from || !req.body.from.name) {
-    res.status(400).send({
-      error: 'Restaurant name not specified. Please specify a non-empty restaurant name.'
-    });
-    return;
-  }
-
-  MongoClient.connect(mongoUri, function(err, db) {
-    db.collection('orders', function(er, collection) {
-      collection.insert(req.body, {
-        w: 1
-      }, function(er, rs) {
-        if (process.env.ORDER_ALERTS_TO) {
-          // Send an e-mail if variable is set
-          transport.sendMail({
-            from: process.env.ORDER_ALERTS_FROM,
-            to: process.env.ORDER_ALERTS_TO,
-            subject: 'Ejja Ha Nieklu: Order Opened (' + req
-              .body.from.name + ')',
-            text: 'An order has been opened for ' + req.body
-              .from.name +
-              '. \r\nCheck it out over on the Ejja Ha Nieklu app on http://ejja-ha-nieklu.herokuapp.com/ :)'
-          });
-        }
-        res.send(rs.ops[0]);
-        io.emit('new_order', rs.ops[0]);
-        db.close();
-      });
-    });
-  });
 });
 
 var handleItemPost = function(req, res) {
@@ -120,25 +87,6 @@ app.get('/item', function(req, res) {
       }).toArray(function(error, result) {
         res.send(result);
         db.close();
-      });
-    });
-  });
-});
-
-app.delete('/order/:id', function(req, res) {
-  MongoClient.connect(mongoUri, function(err, db) {
-    db.collection('orders', function(er, collection) {
-      collection.remove({
-        _id: new ObjectId(req.params.id)
-      }, function() {
-        db.collection('items', function(er, collection) {
-          collection.remove({
-            _order: new ObjectId(req.params.id)
-          }, function() {
-            io.emit('closed_order', req.params.id);
-            res.send();
-          });
-        });
       });
     });
   });
@@ -209,3 +157,5 @@ app.post('/pleas', function(req, res) {
     });
   });
 });
+
+Order.bind(app, mongoUri, io);
