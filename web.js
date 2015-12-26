@@ -23,6 +23,9 @@ app.use(express.static(__dirname + '/webapp/dist'));
 
 var port = Number(process.env.PORT || 5000);
 var server = app.listen(port, function() {
+  if (process.send) {
+    process.send('LISTENING_STARTED');
+  }
   console.log("Listening on " + port);
 });
 var io = require('socket.io').listen(server);
@@ -135,6 +138,7 @@ app.delete('/order/:id', function(req, res) {
             io.emit('closed_order', req.params.id);
             res.send();
           });
+        });
       });
     });
   });
@@ -204,12 +208,4 @@ app.post('/pleas', function(req, res) {
       });
     });
   });
-});
-
-var port = Number(process.env.PORT || 5000);
-app.listen(port, function() {
-  if (process.send) {
-    process.send('LISTENING_STARTED');
-  }
-  console.log("Listening on " + port);
 });
