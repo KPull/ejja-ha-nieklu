@@ -5,6 +5,18 @@ var isEmpty = function (text) {
     return !text || text === '';
 };
 
+var processMongoError = function (error, reject, then) {
+    if (error) {
+        console.log('An error occurred while accessing the database', error);
+        reject({
+            code: 500,
+            message: 'An error occurred while accessing the database'
+        });
+    } else {
+        then();
+    }
+};
+
 /**
  * An order represents an intended purchase from a food establishment. For example,
  * a group of friends might want to buy a meal together so they would open an Order
@@ -28,30 +40,38 @@ module.exports = function () {
                     code: 400,
                     message: 'Author\'s name not specified. Please specify a non-empty name for the person opening this order.'
                 });
+                return;
             }
             if (isEmpty(order.email)) {
                 reject({
                     code: 400,
                     message: 'E-mail not specified. Please specify a non-empty e-mail for this order.'
                 });
+                return;
             }
-            MongoClient.connect(mongoUri, function (err, db) {
-                db.collection('orders', function (er, collection) {
-                    collection.insert(order, {
-                        w: 1
-                    }, function (er, rs) {
-                        if (process.env.ORDER_ALERTS_TO) {
-                            // Send an e-mail if variable is set
-                            transport.sendMail({
-                                from: process.env.ORDER_ALERTS_FROM,
-                                to: process.env.ORDER_ALERTS_TO,
-                                subject: 'Ejja Ha Nieklu: Order Opened (' + order.from.name + ')',
-                                text: 'An order has been opened for ' + order.from.name +
-                                        '. \r\nCheck it out over on the Ejja Ha Nieklu app on http://ejja-ha-nieklu.herokuapp.com/ :)'
+            MongoClient.connect(mongoUri, function (error1, db) {
+                processMongoError(error1, reject, function () {
+                    db.collection('orders', function (error2, collection) {
+                        processMongoError(error2, reject, function () {
+                            collection.insert(order, {
+                                w: 1
+                            }, function (error3, rs) {
+                                processMongoError(error3, reject, function () {
+                                    if (process.env.ORDER_ALERTS_TO) {
+                                        // Send an e-mail if variable is set
+                                        transport.sendMail({
+                                            from: process.env.ORDER_ALERTS_FROM,
+                                            to: process.env.ORDER_ALERTS_TO,
+                                            subject: 'Ejja Ha Nieklu: Order Opened (' + order.from.name + ')',
+                                            text: 'An order has been opened for ' + order.from.name +
+                                                    '. \r\nCheck it out over on the Ejja Ha Nieklu app on http://ejja-ha-nieklu.herokuapp.com/ :)'
+                                        });
+                                    }
+                                    db.close();
+                                    fulfill(rs.ops[0]);
+                                });
                             });
-                        }
-                        db.close();
-                        fulfill(rs.ops[0]);
+                        });
                     });
                 });
             });
@@ -64,11 +84,19 @@ module.exports = function () {
                 db.collection('orders', function (er, collection) {
                     collection.remove({
                         _id: new ObjectId(id)
-                    }, function () {
+                    }, function (error, data) {
+                        if (data.result.n === 0) {
+                            reject({
+                                code: 404,
+                                message: 'Could not find the specified order to delete'
+                            });
+                            return;
+                        }
                         db.collection('items', function (er, collection) {
                             collection.remove({
                                 _order: new ObjectId(id)
                             }, function () {
+                                db.close();
                                 fulfill();
                             });
                         });
@@ -98,6 +126,9 @@ module.exports = function () {
                 remove(req.params.id).then(function () {
                     io.emit('closed_order', req.params.id);
                     res.send();
+                }, function (error) {
+                    console.log('Error while deleting an order', error);
+                    res.send(error.code, error.message);
                 });
             });
         }
