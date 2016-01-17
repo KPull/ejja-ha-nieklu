@@ -17,5 +17,6 @@
   },
   "_source": "git://github.com/btford/angular-socket-io.git",
   "_target": "~0.7.0",
-  "_originalSource": "angular-socket-io"
+  "_originalSource": "angular-socket-io",
+  "_direct": true
 }
