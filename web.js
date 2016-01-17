@@ -53,6 +53,10 @@ var handleItemPost = function(req, res) {
   });
 }
 
+app.get('/', function (req, res) {
+    res.send();
+});
+
 app.post('/item', function(req, res) {
   handleItemPost(req, res);
 });
