@@ -8,6 +8,7 @@ var cors = require('cors');
 var bodyParser = require('body-parser');
 var nodemailer = require('nodemailer');
 var Order = require('./ikel_modules/order.js');
+var Item = require('./ikel_modules/item.js');
 
 var MongoClient = require('mongodb').MongoClient
 var ObjectId = require('mongodb').ObjectID;
@@ -38,49 +39,6 @@ var transport = nodemailer.createTransport("SMTP", {
     user: process.env.MAILER_USERNAME,
     pass: process.env.MAILER_PASSWORD
   }
-});
-
-var handleItemPost = function(req, res) {
-  MongoClient.connect(mongoUri, function(err, db) {
-    db.collection('items', function(er, collection) {
-      collection.save(req.body, {
-        w: 1
-      }, function(er, rs) {
-        res.send(rs.ops[0]);
-        db.close();
-      });
-    });
-  });
-}
-
-app.get('/', function (req, res) {
-    res.send();
-});
-
-app.post('/item', function(req, res) {
-  handleItemPost(req, res);
-});
-
-app.post('/item/:id', function(req, res) {
-  // Make sure the id used in the URL is the same in the object
-  req.body['_id'] = new ObjectId(req.params.id);
-
-  handleItemPost(req, res)
-});
-
-app.delete('/item/:id', function(req, res) {
-  MongoClient.connect(mongoUri, function(err, db) {
-    db.collection('items', function(er, collection) {
-      collection.remove({
-        _id: new ObjectId(req.params.id)
-      }, {
-        w: 1
-      }, function() {
-        res.send();
-        db.close();
-      });
-    });
-  });
 });
 
 app.get('/item', function(req, res) {
@@ -119,47 +77,5 @@ app.get('/order/:id', function(req, res) {
   });
 });
 
-app.get('/pleas', function(req, res) {
-  MongoClient.connect(mongoUri, function(err, db) {
-    if (err) {
-      console.error(err);
-      req.send(500, err);
-    }
-    db.collection('pleas', function(er, collection) {
-      var now = new Date();
-      collection.find({
-        timestamp: {
-          $gte: new Date(now.getFullYear(), now.getMonth(), now
-            .getDate(), 0, 0, 0, 0),
-          $lte: new Date(now.getFullYear(), now.getMonth(), now
-            .getDate(), 23, 59, 59, 999)
-        }
-      }).toArray(function(error, results) {
-        res.send(results);
-        db.close();
-      });
-    });
-  });
-});
-
-app.post('/pleas', function(req, res) {
-  MongoClient.connect(mongoUri, function(err, db) {
-    if (err) {
-      console.error(err);
-      req.send(500, err);
-    }
-    db.collection('pleas', function(er, collection) {
-      req.body.timestamp = new Date();
-      collection.insert(req.body, {
-        w: 1
-      }, function(er, rs) {
-        // in case nothing is returned
-        var value = (!!rs ? null : rs[0]);
-        res.send(value);
-        db.close();
-      });
-    });
-  });
-});
-
 Order.bind(app, mongoUri, io);
+Item.bind(app, mongoUri, io);
