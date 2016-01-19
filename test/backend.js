@@ -305,7 +305,7 @@ describe('Ejja Ħa Nieklu Backend Node.JS Module', function() {
         } else {
           expect(resp.statusCode).toBe(200, 'Received HTTP response code %s but should have received HTTP response code %s');
           body = JSON.parse(body);
-          expect(body).toEqual(item[0]);
+          expect(body).toEqual(items[0]);
           done();
         }
       });
