@@ -41,40 +41,8 @@ var transport = nodemailer.createTransport("SMTP", {
   }
 });
 
-app.get('/item', function(req, res) {
-  MongoClient.connect(mongoUri, function(err, db) {
-    db.collection('items', function(er, collection) {
-      collection.find({
-        _order: req.query.order
-      }).toArray(function(error, result) {
-        res.send(result);
-        db.close();
-      });
-    });
-  });
-});
-
-app.get('/order', function(req, res) {
-  MongoClient.connect(mongoUri, function(err, db) {
-    db.collection('orders', function(er, collection) {
-      collection.find().toArray(function(error, results) {
-        res.send(results);
-        db.close();
-      });
-    });
-  });
-});
-
-app.get('/order/:id', function(req, res) {
-  MongoClient.connect(mongoUri, function(err, db) {
-    var orders = db.collection('orders');
-    orders.findOne({
-      _id: new ObjectId(req.params.id)
-    }, function(error, results) {
-      res.send(results);
-      db.close();
-    });
-  });
+app.get('/', function(req, res) {
+    res.send();
 });
 
 Order.bind(app, mongoUri, io);

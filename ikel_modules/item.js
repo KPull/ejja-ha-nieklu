@@ -26,20 +26,62 @@ module.exports = function () {
 
     var create = function (item) {
         return new Promise(function (fulfill, reject) {
+            if (isEmpty(item.name)) {
+                reject({
+                    code: 400,
+                    message: 'Item name not specified. Please specify a non-empty item name.'
+                });
+                return;
+            }
+            if (isEmpty(item.author)) {
+                reject({
+                    code: 400,
+                    message: 'Author\'s name not specified. Please specify a non-empty name for the person who wants this item.'
+                });
+                return;
+            }
+            if (isEmpty(item.price)) {
+                reject({
+                    code: 400,
+                    message: 'Price not specified. Please specify a non-empty price for this item.'
+                });
+                return;
+            }
             MongoClient.connect(mongoUri, function (error1, db) {
                 processMongoError(error1, reject, function () {
-                    db.collection('items', function (error2, collection) {
-                        processMongoError(error2, reject, function () {
-                            collection.insert(item, {
-                                w: 1
-                            }, function (error3, rs) {
-                                processMongoError(error3, reject, function () {
-                                    db.close();
-                                    fulfill(rs.ops[0]);
-                                });
+                    db.collection('orders', function(error2, ordersCollection) {
+                        processMongoError(error2, reject, function() {
+                            ordersCollection.findOne({
+                                _id: new ObjectId(item._order)
+                            }, function (error, data) {
+                                if (error) {
+                                    reject({
+                                       code: 500,
+                                       message: 'An error occurred while accessing the database'
+                                    });
+                                } else if (!data) {
+                                    reject({
+                                        code: 404,
+                                        message: 'Could not find the specified item'
+                                    });
+                                } else {
+                                    db.collection('items', function (error4, itemsCollection) {
+                                        processMongoError(error4, reject, function () {
+                                            itemsCollection.insert(item, {
+                                                w: 1
+                                            }, function (error5, rs) {
+                                                processMongoError(error5, reject, function () {
+                                                    db.close();
+                                                    fulfill(rs.ops[0]);
+                                                });
+                                            });
+                                        });
+                                    });
+                                }
                             });
                         });
                     });
+                    
                 });
             });
         });
@@ -123,7 +165,7 @@ module.exports = function () {
                 }, function(error) {
                     console.log('Error while looking up an item', error);
                     res.send(error.code, error.message);
-                })
+                });
             });
         }
     };

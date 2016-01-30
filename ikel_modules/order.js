@@ -82,29 +82,50 @@ module.exports = function () {
         return new Promise(function (fulfill, reject) {
             MongoClient.connect(mongoUri, function (err, db) {
                 db.collection('orders', function (er, collection) {
-                    collection.remove({
-                        _id: new ObjectId(id)
-                    }, function (error, data) {
-                        if (data.result.n === 0) {
-                            reject({
-                                code: 404,
-                                message: 'Could not find the specified order to delete'
-                            });
-                            return;
-                        }
-                        db.collection('items', function (er, collection) {
-                            collection.remove({
-                                _order: new ObjectId(id)
-                            }, function () {
-                                db.close();
-                                fulfill();
+                    processMongoError(er, reject, function () {
+                        collection.remove({
+                            _id: new ObjectId(id)
+                        }, function (error, data) {
+                            if (data.result.n === 0) {
+                                reject({
+                                    code: 404,
+                                    message: 'Could not find the specified order to delete'
+                                });
+                                return;
+                            }
+                            db.collection('items', function (er, collection) {
+                                collection.remove({
+                                    _order: new ObjectId(id)
+                                }, function () {
+                                    db.close();
+                                    fulfill();
+                                });
                             });
                         });
                     });
                 });
             });
         });
-    }
+    };
+
+    var getAll = function () {
+        return new Promise(function (fulfill, reject) {
+            MongoClient.connect(mongoUri, function (err, db) {
+                processMongoError(err, reject, function () {
+                    db.collection('orders', function (er, collection) {
+                        processMongoError(er, reject, function () {
+                            collection.find().toArray(function (error, results) {
+                                processMongoError(error, reject, function () {
+                                    db.close();
+                                    fulfill(results);
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    };
 
     return {
         /**
@@ -131,7 +152,15 @@ module.exports = function () {
                     res.send(error.code, error.message);
                 });
             });
+            app.get('/order', function(req, res) {
+                getAll().then(function (orders) {
+                    res.send(orders);
+                }, function (error) {
+                    console.log('Error while deleting an order', error);
+                    res.send(error.code, error.message);
+                });
+            });
         }
-    }
+    };
 
 }();
