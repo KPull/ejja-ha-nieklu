@@ -126,6 +126,33 @@ module.exports = function () {
             });
         });
     };
+    
+    var lookup = function (id) {
+        return new Promise(function (fulfill, reject) {
+            MongoClient.connect(mongoUri, function (err, db) {
+                db.collection('orders', function (er, collection) {
+                    collection.findOne({
+                        _id: new ObjectId(id)
+                    }, function (error, data) {
+                        db.close();
+                        if (error) {
+                            reject({
+                               code: 500,
+                               message: 'An error occurred while accessing the database'
+                            });
+                        } else if (!data) {
+                            reject({
+                                code: 404,
+                                message: 'Could not find the specified item'
+                            });
+                        } else {
+                            fulfill(data);
+                        }
+                    });
+                });
+            });
+        });
+    };
 
     return {
         /**
@@ -157,6 +184,14 @@ module.exports = function () {
                     res.send(orders);
                 }, function (error) {
                     console.log('Error while deleting an order', error);
+                    res.send(error.code, error.message);
+                });
+            });
+            app.get('/order/:id', function(req, res) {
+                lookup(req.params.id).then(function (orders) {
+                    res.send(orders);
+                }, function (error) {
+                    console.log('Error while fetching an order', error);
                     res.send(error.code, error.message);
                 });
             });
