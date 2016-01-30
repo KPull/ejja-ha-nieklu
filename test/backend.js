@@ -310,6 +310,20 @@ describe('Ejja Ħa Nieklu Backend Node.JS Module', function() {
         }
       });
     });
+    it('should retrieve items of a particular order', function(done) {
+      request('http://localhost:' + port + '/item?order=' + items[0]._order, function(err, resp, body) {
+        if (err) {
+          done(new Error('Error during request', err));
+        } else {
+          expect(resp.statusCode).toBe(200, 'Received HTTP response code %s but should have received HTTP response code %s');
+          body = JSON.parse(body);
+          expect(body).toEqual(items.filter(function(item){
+              return item._order === items[0]._order;
+          }));
+          done();
+        }
+      });
+    });
     it('should handle a request for an inexistant item', function(done) {
       request('http://localhost:' + port + '/item/000000000000000000001009', function(err, resp, body) {
         if (err) {

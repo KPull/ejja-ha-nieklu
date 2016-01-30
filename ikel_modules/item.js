@@ -135,6 +135,42 @@ module.exports = function () {
             });
         });
     };
+    
+    var query = function (query) {
+        return new Promise(function (fulfill, reject) {
+            if (!query || !query.order) {
+                reject({
+                    code: 501,
+                    message: 'The current implementation does not support arbitrary queries for items. Make sure that your items request ' +
+                            'contains the "order" query parameter.'
+                });
+                return;
+            }
+            MongoClient.connect(mongoUri, function (err, db) {
+                processMongoError(err, reject, function () {
+                    db.collection('items', function (er, collection) {
+                        processMongoError(er, reject, function () {
+                            collection.find({
+                                _order: query.order
+                            }).toArray(function (error, results) {
+                                processMongoError(error, reject, function () {
+                                    db.close();
+                                    if (error) {
+                                        reject({
+                                           code: 500,
+                                           message: 'An error occurred while accessing the database'
+                                        });
+                                    } else {
+                                        fulfill(results);
+                                    }
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    };
 
     return {
         /**
@@ -156,6 +192,14 @@ module.exports = function () {
                     res.send();
                 }, function (error) {
                     console.log('Error while deleting an item', error);
+                    res.send(error.code, error.message);
+                });
+            });
+            app.get('/item', function (req, res) {
+                query(req.query).then(function(items) {
+                    res.send(items);
+                }, function(error) {
+                    console.log('Error while querying items', error);
                     res.send(error.code, error.message);
                 });
             });
