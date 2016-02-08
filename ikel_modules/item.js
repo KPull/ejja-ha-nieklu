@@ -1,4 +1,4 @@
-var MongoClient = require('mongodb').MongoClient
+var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
 
 var isEmpty = function (text) {
@@ -62,7 +62,7 @@ module.exports = function () {
                                 } else if (!data) {
                                     reject({
                                         code: 404,
-                                        message: 'Could not find the specified item'
+                                        message: 'Could not find the specified order'
                                     });
                                 } else {
                                     db.collection('items', function (error4, itemsCollection) {
@@ -88,7 +88,7 @@ module.exports = function () {
     };
 
     var update = function (id, item) {
-        item._id = id;      // Ensure we're updating the item with the correct id
+        item._id = new ObjectId(id);      // Ensure we're updating the item with the correct id
         return create(item);
     };
 
@@ -184,6 +184,17 @@ module.exports = function () {
          */
         bind: function (app, mongo, io) {
             mongoUri = mongo;
+            
+            // When this module binds, create some indices in the database
+            MongoClient.connect(mongoUri, function (error1, db) {
+                processMongoError(error1, function() {}, function () {
+                    db.collection('items', function (error4, itemsCollection) {
+                        itemsCollection.ensureIndex({ _order: 1 });
+                        db.close();
+                    });
+                });
+            });
+            
             app.post('/item', function (req, res) {
                 create(req.body).then(function (item) {
                     res.send(item);
