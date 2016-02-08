@@ -49,15 +49,15 @@ module.exports = function () {
             }
             MongoClient.connect(mongoUri, function (error1, db) {
                 processMongoError(error1, reject, function () {
-                    db.collection('orders', function(error2, ordersCollection) {
-                        processMongoError(error2, reject, function() {
+                    db.collection('orders', function (error2, ordersCollection) {
+                        processMongoError(error2, reject, function () {
                             ordersCollection.findOne({
                                 _id: new ObjectId(item._order)
                             }, function (error, data) {
                                 if (error) {
                                     reject({
-                                       code: 500,
-                                       message: 'An error occurred while accessing the database'
+                                        code: 500,
+                                        message: 'An error occurred while accessing the database'
                                     });
                                 } else if (!data) {
                                     reject({
@@ -67,12 +67,12 @@ module.exports = function () {
                                 } else {
                                     db.collection('items', function (error4, itemsCollection) {
                                         processMongoError(error4, reject, function () {
-                                            itemsCollection.insert(item, {
+                                            itemsCollection.save(item, {
                                                 w: 1
                                             }, function (error5, rs) {
                                                 processMongoError(error5, reject, function () {
                                                     db.close();
-                                                    fulfill(rs.ops[0]);
+                                                    fulfill(rs[0]);
                                                 });
                                             });
                                         });
@@ -81,10 +81,15 @@ module.exports = function () {
                             });
                         });
                     });
-                    
+
                 });
             });
         });
+    };
+
+    var update = function (id, item) {
+        item._id = id;      // Ensure we're updating the item with the correct id
+        return create(item);
     };
 
     var remove = function (id) {
@@ -108,7 +113,7 @@ module.exports = function () {
             });
         });
     };
-    
+
     var lookup = function (id) {
         return new Promise(function (fulfill, reject) {
             MongoClient.connect(mongoUri, function (err, db) {
@@ -119,8 +124,8 @@ module.exports = function () {
                         db.close();
                         if (error) {
                             reject({
-                               code: 500,
-                               message: 'An error occurred while accessing the database'
+                                code: 500,
+                                message: 'An error occurred while accessing the database'
                             });
                         } else if (!data) {
                             reject({
@@ -135,7 +140,7 @@ module.exports = function () {
             });
         });
     };
-    
+
     var query = function (query) {
         return new Promise(function (fulfill, reject) {
             if (!query || !query.order) {
@@ -157,8 +162,8 @@ module.exports = function () {
                                     db.close();
                                     if (error) {
                                         reject({
-                                           code: 500,
-                                           message: 'An error occurred while accessing the database'
+                                            code: 500,
+                                            message: 'An error occurred while accessing the database'
                                         });
                                     } else {
                                         fulfill(results);
@@ -187,6 +192,14 @@ module.exports = function () {
                     res.send(error.code, error.message);
                 });
             });
+            app.post('/item/:id', function (req, res) {
+                update(req.params.id, req.body).then(function (item) {
+                    res.send(item);
+                }, function (error) {
+                    console.log('Error while creating a new item', error);
+                    res.send(error.code, error.message);
+                });
+            });
             app.delete('/item/:id', function (req, res) {
                 remove(req.params.id).then(function () {
                     res.send();
@@ -196,17 +209,17 @@ module.exports = function () {
                 });
             });
             app.get('/item', function (req, res) {
-                query(req.query).then(function(items) {
+                query(req.query).then(function (items) {
                     res.send(items);
-                }, function(error) {
+                }, function (error) {
                     console.log('Error while querying items', error);
                     res.send(error.code, error.message);
                 });
             });
             app.get('/item/:id', function (req, res) {
-                lookup(req.params.id).then(function(item) {
+                lookup(req.params.id).then(function (item) {
                     res.send(item);
-                }, function(error) {
+                }, function (error) {
                     console.log('Error while looking up an item', error);
                     res.send(error.code, error.message);
                 });

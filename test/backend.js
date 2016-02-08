@@ -449,14 +449,90 @@ describe('Ejja Ħa Nieklu Backend Node.JS Module', function() {
       });
     });
   });
+  
+  describe('Item Update', function() {
+    var orders = [{
+      _id : '000000000000000000000001',
+      restaurant : 'TGI Fridays'
+    }, {
+      _id : '000000000000000000000002',
+      restaurant : 'McDonalds'
+    }];
+    var items = [{
+      _id : '000000000000000000000006',
+      _order: '000000000000000000000001',
+      name : 'Burger',
+      author : 'Kyle',
+      price : '4.95'
+    }, {
+      _id : '000000000000000000000007',
+      _order: '000000000000000000000001',
+      name : 'Pizza',
+      author : 'Bob',
+      price : '9.95'
+    }, {
+      _id : '000000000000000000000008',
+      _order: '000000000000000000000002',
+      name : 'Pasta',
+      author : 'Luke',
+      price : '7.70'
+    }];
+    before('Prepare Mongo', function() {
+      return mongo(mongoUri, { orders: orders, items: items });
+    });
+    it('should update the specified item (using a path variable)', function(done) {
+      request({
+        url: 'http://localhost:' + port + '/item/000000000000000000000006',
+        method: 'POST',
+        json: true,
+        body: {
+            _id : '000000000000000000000006',
+            _order: '000000000000000000000001',
+            name : 'Burger',
+            author : 'Kyle',
+            price : '4.95',
+            paid: true
+        }
+      }, function(err, resp, body) {
+        if (err) {
+          done(new Error('Error during request', err));
+        } else {
+          expect(resp.statusCode).toBe(200, 'Received HTTP response code %s but should have received HTTP response code %s');
+          done();
+        }
+      });
+    });
+    it('should update the specified item (using the collection)', function(done) {
+      request({
+        url: 'http://localhost:' + port + '/item',
+        method: 'POST',
+        json: true,
+        body: {
+            _id: '000000000000000000000007',
+            _order: '000000000000000000000001',
+            name: 'Pizza',
+            author: 'Bob',
+            price: '9.95',
+            paid: true
+        }
+      }, function(err, resp, body) {
+        if (err) {
+          done(new Error('Error during request', err));
+        } else {
+          expect(resp.statusCode).toBe(200, 'Received HTTP response code %s but should have received HTTP response code %s');
+          done();
+        }
+      });
+    });
+  });
 
   describe('Item Deletion', function() {
     var orders = [{
       _id : '000000000000000000000001',
-      restaurant : 'TGI Fridays',
+      restaurant : 'TGI Fridays'
     }, {
       _id : '000000000000000000000002',
-      restaurant : 'McDonalds',
+      restaurant : 'McDonalds'
     }];
     var items = [{
       _id : '000000000000000000000006',
