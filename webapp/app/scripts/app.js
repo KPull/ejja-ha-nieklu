@@ -35,12 +35,12 @@ angular.module('ikelClientApp', [
 }).config(['localStorageServiceProvider', function(
   localStorageServiceProvider) {
   localStorageServiceProvider.setPrefix('EHN');
-}]).factory('ehnSocket', function($rootScope, socketFactory, apiPrefix) {
+}]).factory('ehnSocket', ['socketFactory', 'apiPrefix', function(socketFactory, apiPrefix) {
   var ehnSocket = socketFactory({
     ioSocket: io.connect(apiPrefix)
   });
   return ehnSocket;
-}).run(function(ehnSocket, $rootScope, webNotification) {
+}]).run(['ehnSocket', '$rootScope', 'webNotification', function(ehnSocket, $rootScope, webNotification) {
   if (Notification) {
     Notification.requestPermission();
   }
@@ -63,4 +63,4 @@ angular.module('ikelClientApp', [
     }, function() {});
     $rootScope.$broadcast('REMOTE_ORDER_REMOVED', order);
   });
-});
+}]);
