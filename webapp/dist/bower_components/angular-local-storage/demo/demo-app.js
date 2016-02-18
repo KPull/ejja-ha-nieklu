@@ -8,16 +8,18 @@ angular.module('demoModule', ['LocalStorageModule'])
   '$scope',
   'localStorageService',
   function($scope, localStorageService) {
+    // Start fresh
+    localStorageService.clearAll();
 
     $scope.$watch('localStorageDemo', function(value){
-      localStorageService.set('localStorageDemo',value);
+      localStorageService.add('localStorageDemo',value);
       $scope.localStorageDemoValue = localStorageService.get('localStorageDemo');
     });
 
     $scope.storageType = 'Local storage';
 
     if (localStorageService.getStorageType().indexOf('session') >= 0) {
-      $scope.storageType = 'Session storage';
+      $scope.storageType = 'Session storage'
     }
 
     if (!localStorageService.isSupported) {

@@ -40,5 +40,6 @@
   },
   "_source": "git://github.com/sagiegurari/angular-web-notification.git",
   "_target": "~0.0.33",
-  "_originalSource": "angular-web-notification"
+  "_originalSource": "angular-web-notification",
+  "_direct": true
 }
