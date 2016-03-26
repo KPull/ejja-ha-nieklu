@@ -362,25 +362,27 @@ module.exports = function (grunt) {
     ]);
 
     grunt.registerTask('build', function (target) {
+        var tasks;
         if (target) {
-            require('./targets/' + target + '.js')(grunt);
+            tasks = require('./targets/' + target + '.js')(grunt);
+        } else {
+            tasks = [
+                'clean:dist',
+                'useminPrepare',
+                'concurrent:dist',
+                'autoprefixer',
+                'concat',
+                'ngmin',
+                'copy:dist',
+                'cdnify',
+                'cssmin',
+                'uglify',
+                'rev',
+                'usemin',
+            ]
         }
         
-        grunt.task.run([
-            'clean:dist',
-            'useminPrepare',
-            'concurrent:dist',
-            'autoprefixer',
-            'concat',
-            'ngmin',
-            'copy:dist',
-            'cdnify',
-            'cssmin',
-            'uglify',
-            'rev',
-            'usemin',
-            'replace'
-        ]);
+        grunt.task.run(tasks);
     });
 
     grunt.registerTask('default', [
