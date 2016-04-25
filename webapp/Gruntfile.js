@@ -137,18 +137,7 @@ module.exports = function (grunt) {
         sass: {
             options: {
                 sourceMap: true,
-                sassDir: '<%= yeoman.app %>/styles',
-                cssDir: '.tmp/styles',
-                generatedImagesDir: '.tmp/images/generated',
-                imagesDir: '<%= yeoman.app %>/images',
-                javascriptsDir: '<%= yeoman.app %>/scripts',
-                fontsDir: '<%= yeoman.app %>/styles/fonts',
-                includePaths: [ '<%= yeoman.app %>/bower_components' ],
-                httpImagesPath: '/images',
-                httpGeneratedImagesPath: '/images/generated',
-                httpFontsPath: '/styles/fonts',
-                relativeAssets: false,
-                assetCacheBuster: false
+                includePaths: [ '<%= yeoman.app %>/bower_components' ]
             },
             dist: {
                 files: {
