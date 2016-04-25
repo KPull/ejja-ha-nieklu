@@ -18,7 +18,7 @@
     "mongodb": "=2.0.45",
     "nodemailer": "=0.6.3",
     "redis-url": "=0.2.0",
-    "socket.io": "^1.3.7"
+    "socket.io": "=1.3.7"
   },
   "devDependencies": {
     "expect": "^1.13.0",
