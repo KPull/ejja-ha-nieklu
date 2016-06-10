@@ -57,16 +57,6 @@ module.exports = function () {
                                 w: 1
                             }, function (error3, rs) {
                                 processMongoError(error3, reject, function () {
-                                    if (process.env.ORDER_ALERTS_TO) {
-                                        // Send an e-mail if variable is set
-                                        transport.sendMail({
-                                            from: process.env.ORDER_ALERTS_FROM,
-                                            to: process.env.ORDER_ALERTS_TO,
-                                            subject: 'Ejja Ha Nieklu: Order Opened (' + order.from.name + ')',
-                                            text: 'An order has been opened for ' + order.from.name +
-                                                    '. \r\nCheck it out over on the Ejja Ha Nieklu app on http://ejja-ha-nieklu.herokuapp.com/ :)'
-                                        });
-                                    }
                                     db.close();
                                     fulfill(rs.ops[0]);
                                 });

@@ -32,15 +32,6 @@ var server = app.listen(port, function() {
 });
 var io = require('socket.io').listen(server);
 
-// Create the e-mail transport object
-var transport = nodemailer.createTransport("SMTP", {
-  service: "Gmail",
-  auth: {
-    user: process.env.MAILER_USERNAME,
-    pass: process.env.MAILER_PASSWORD
-  }
-});
-
 app.get('/', function(req, res) {
     res.send();
 });
