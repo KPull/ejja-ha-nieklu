@@ -68,6 +68,46 @@ module.exports = function () {
         });
     };
 
+    /**
+     * Modifies the order with the specified id by applying the specified JSON patch (RFC-6902)
+     *
+     * @param id The id for the order to modify
+     * @param patch The JSON Patch (RFC-6902) object to apply to the currently persisted order
+     */
+    var modify = function (id, patch) {
+        return new Promise(function(fulfill, reject) {
+            MongoClient.connect(mongoUri, function (err, db) {
+                db.collection('orders', function (er, collection) {
+                    collection.findOne({
+                        _id: new ObjectId(id)
+                    }, function (error, data) {
+                        if (error) {
+                            reject({
+                                code: 500,
+                                message: 'An error occurred while accessing the database'
+                            });
+                        } else if (!data) {
+                            reject({
+                                code: 404,
+                                message: 'Could not find the specified item'
+                            });
+                        } else {
+                            jsonpatch.apply(data, patch);
+                            collection.update(data, {
+                                w: 1
+                            }, function (error3) {
+                                processMongoError(error3, reject, function () {
+                                    db.close();
+                                    fulfill(data);
+                                });
+                            });
+                        }
+                    });
+                });
+            });
+        });
+    };
+
     var remove = function (id) {
         return new Promise(function (fulfill, reject) {
             MongoClient.connect(mongoUri, function (err, db) {
@@ -116,7 +156,7 @@ module.exports = function () {
             });
         });
     };
-    
+
     var lookup = function (id) {
         return new Promise(function (fulfill, reject) {
             MongoClient.connect(mongoUri, function (err, db) {
@@ -127,8 +167,8 @@ module.exports = function () {
                         db.close();
                         if (error) {
                             reject({
-                               code: 500,
-                               message: 'An error occurred while accessing the database'
+                                code: 500,
+                                message: 'An error occurred while accessing the database'
                             });
                         } else if (!data) {
                             reject({
@@ -169,7 +209,7 @@ module.exports = function () {
                     res.send(error.code, error.message);
                 });
             });
-            app.get('/order', function(req, res) {
+            app.get('/order', function (req, res) {
                 getAll().then(function (orders) {
                     res.send(orders);
                 }, function (error) {
@@ -177,7 +217,7 @@ module.exports = function () {
                     res.send(error.code, error.message);
                 });
             });
-            app.get('/order/:id', function(req, res) {
+            app.get('/order/:id', function (req, res) {
                 lookup(req.params.id).then(function (orders) {
                     res.send(orders);
                 }, function (error) {
