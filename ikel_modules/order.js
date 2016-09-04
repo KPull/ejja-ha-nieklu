@@ -1,5 +1,7 @@
-var MongoClient = require('mongodb').MongoClient
+var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
+
+var Database = require('./database.js').Database;
 
 var isEmpty = function (text) {
     return !text || text === '';
@@ -27,44 +29,35 @@ module.exports = function () {
     var mongoUri = null;
 
     var create = function (order) {
-        return new Promise(function (fulfill, reject) {
-            if (!order.from || !order.from.name) {
-                reject({
-                    code: 400,
-                    message: 'Restaurant name not specified. Please specify a non-empty restaurant name.'
-                });
-                return;
-            }
-            if (isEmpty(order.author)) {
-                reject({
-                    code: 400,
-                    message: 'Author\'s name not specified. Please specify a non-empty name for the person opening this order.'
-                });
-                return;
-            }
-            if (isEmpty(order.email)) {
-                reject({
-                    code: 400,
-                    message: 'E-mail not specified. Please specify a non-empty e-mail for this order.'
-                });
-                return;
-            }
-            MongoClient.connect(mongoUri, function (error1, db) {
-                processMongoError(error1, reject, function () {
-                    db.collection('orders', function (error2, collection) {
-                        processMongoError(error2, reject, function () {
-                            collection.insert(order, {
-                                w: 1
-                            }, function (error3, rs) {
-                                processMongoError(error3, reject, function () {
-                                    db.close();
-                                    fulfill(rs.ops[0]);
-                                });
-                            });
-                        });
-                    });
-                });
+        if (!order.from || !order.from.name) {
+            return Promise.reject({
+                code: 400,
+                message: 'Restaurant name not specified. Please specify a non-empty restaurant name.'
             });
+        }
+        if (isEmpty(order.author)) {
+            return Promise.reject({
+                code: 400,
+                message: 'Author\'s name not specified. Please specify a non-empty name for the person opening this order.'
+            });
+        }
+        if (isEmpty(order.email)) {
+            return Promise.reject({
+                code: 400,
+                message: 'E-mail not specified. Please specify a non-empty e-mail for this order.'
+            });
+        }
+        return Database('orders').then(function(collection) {
+            return collection.insert(order, {
+                w: 1
+            });
+        }).then(function(resultset) {
+            return resultset.ops[0];
+        }).catch(function() {
+            return {
+                code: 500,
+                message: 'An error occurred while creating an order.'
+            };
         });
     };
 
