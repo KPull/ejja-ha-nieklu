@@ -7,7 +7,7 @@ var app = express();
 var cors = require('cors');
 var bodyParser = require('body-parser');
 var nodemailer = require('nodemailer');
-var Order = require('./ikel_modules/order.js');
+var Order = require('./ikel_modules/order-resource.js');
 var Item = require('./ikel_modules/item.js');
 
 var MongoClient = require('mongodb').MongoClient
